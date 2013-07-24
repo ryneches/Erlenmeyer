@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>The Sample Registrar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="{{ url_for('static', filename='css/bootstrap.css') }}" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+      .form-signin {
+      align: right;
+		max-width: 300px;
+        padding: 19px 29px 29px;
+        margin: 0 auto 20px;
+        background-color: #fff;
+        border: 1px solid #e5e5e5;
+        -webkit-border-radius: 5px;
+           -moz-border-radius: 5px;
+                border-radius: 5px;
+        -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+           -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+                box-shadow: 0 1px 2px rgba(0,0,0,.05);
+      }
+      .form-signin .form-signin-heading,
+      .form-signin .checkbox {
+        margin-bottom: 10px;
+      }
+      .form-signin input[type="text"],
+      .form-signin input[type="password"] {
+        font-size: 16px;
+        height: auto;
+        margin-bottom: 15px;
+        padding: 7px 9px;
+      }
+
+    </style>
+    <link href="{{ url_for('static', filename='css/bootstrap-responsive.css' ) }}" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png' )}}">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/">The Sample Registrar</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="active"><a href="{{ url_for('index') }}">Home</a></li>
+              <li><a data-toggle="modal" href="#aboutModal">About</a></li>
+              <li><a data-toggle="modal" href="#contactModal">Contact</a></li>
+              {% if authenticated %} 
+                  
+				  <li><a href="{{ url_for('profile', username=username) }}">My profile</a></li>
+				  <li><a href="{{ url_for('logout', username=username)
+}}">Log out</a></li>
+              {% endif %}
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+
+    <div id="aboutModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3 id="myModalLabel">About the Sample Registrar</h3>
+    </div>
+    <div class="modal-body">
+    <p>The Sample Registrar was created by <a href="http://vort.org/">Russell Neches</a> as part of 
+    the Project MERCCURI collaboration among <a href="http://ucdavis.edu">UC Davis</a>, 
+    <a href="http://www.sciencecheerleader.com/">Science Cheerleader</a>,
+    <a href="http://scistarter.com/">Scistarter</a>, <a href="http://www.spaceflorida.gov/">Sace Florida</a>
+    and <a href="http://nanoracks.com/">NanoRacks</a>.</p>
+    <p>The Sample Registrar is designed to be a central clearinghouse for coordinating 
+    <a href="http://en.wikipedia.org/wiki/Citizen_science">citizen science</a> sample
+    collection and return.
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal">Close</button>
+    </div>
+    </div>
+
+    <div id="contactModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3 id="myModalLabel">Contact us</h3>
+    </div>
+    <div class="modal-body">
+    Write to us at :
+    <p>Sample Registrar, c/o Russell Neches<br/>
+    Room 5212<br/>
+    Genome and Biomedical Sciences Facilities<br/>
+    451 Health Sciences Drive<br/>
+    Davis, CA  95616-8816<br/>
+    </p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal">Close</button>
+    </div>
+    </div>
+   
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="{{ category }} alert fade in">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    {% if category == "alert-error" %}
+                    <h3>Whoops!</h3>
+                    {% else %}
+                    <h3>So!</h3>
+                    {% endif %}
+                    <strong><p>{{ message }}</p></strong>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+       
+    {% block body %}{% endblock %}
+
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{{ url_for('static', filename='js/jquery.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap-transition.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap-alert.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap-modal.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap-dropdown.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap-scrollspy.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap-tab.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap-tooltip.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap-popover.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap-button.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap-collapse.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap-carousel.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap-typeahead.js')}}"></script>
+
+  </body>
+</html>

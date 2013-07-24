@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<form class="well form-search" action="/login" method="post">
+    <h2>Please sign in</h2>
+    <input type="text" placeholder="username" name="username">
+    <input type="password" placeholder="Password" name="password">
+    <button class="btn btn-large btn-primary" type="submit">Sign in</button>
+    <a class="btn btn-large btn-success" href="/signup">Sign up</a><br/>
+    <label class="checkbox">
+    <input type="checkbox" value="remember-me"> Remember me
+    </label>
+</form>
+
+{% endblock %}

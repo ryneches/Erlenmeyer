@@ -1,0 +1,93 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<style type="text/css">
+    #mid { position:absolute; top:50%; }
+</style>
+
+{% if authenticated %}
+    <h1>Welcome to your profile page, {{ user.realname }}!</h1>
+{% else %}
+    <h1>This is the profile page for {{ user.realname }}</h1>
+{% endif %}
+
+<!-- avatar with avatar change modal -->
+<div id="avatarModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<form action='/newavatar' method='post' enctype="multipart/form-data">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3 id="myModalLabel">Upload a new avatar picture!</h3>
+    </div>
+    <div class="modal-body">
+       <input type="file" name="avatar" />
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal">Close</button>
+        <input type="submit" class="btn btn-primary" value="Save changes"></input>
+    </div>
+</form>
+</div>
+
+<a data-toggle="modal" href="#avatarModal">
+<img class="img-circle" src="{{ url_for('static', filename=user.thumb)}}">
+</a>
+
+{% if authenticated %}
+<!-- sample registration modal -->
+<div id="regModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<form action='/register' method='post' enctype="multipart/form-data">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3 id="myModalLabel">Register a sample!</h3>
+    </div>
+    <div class="modal-body">
+    <form class="well form-search" action="/register" method="post" enctype="multipart/form-data">
+    <input type="text" class="input-medium" placeholder="Sample name" name="name" size="15"></input>
+    <input type="text" class="input-medium" placeholder="Sample description" name="description" size="140"></input><br /><br />
+    <input type="text" class="input-medium" placeholder="Identifier" name="identifier" size="15"></input>
+    <input type="text" class="input-medium" placeholder="Context type" name="context_type" size="15"></input><br /><br />
+    <input type="text" class="input-medium" placeholder="Latitude" name="lat" size="15"></input>
+    <input type="text" class="input-medium" placeholder="Longitude" name="lng" size="15"></input><br /><br />
+    <input type="text" class="input-medium" placeholder="Surface material" name="surface_material" size="15"></input>
+    <input type="text" class="input-medium" placeholder="Surface condition" name="surface_condition" size="15"></input><br /><br />
+    <input type="text" class="input-medium" placeholder="Surface humidity" name="surface_humidity" size="15"></input>
+    <input type="text" class="input-medium" placeholder="Temperature" name="temp" size="15"></input><br /><br />
+    <span class=""> Closeup photo <input type="file" name="closeup" /></span><br /><br />
+    <span class=""> Context photo <input type="file" name="context" /></span><br /><br />
+    <label class="checkbox"><input type="checkbox" name="direct_sunlight" /> Direct sunlight </label><br />
+    <label class="radio"><input type="radio" name="inorout" value="indoors" /> Indoors </label>
+    <label class="radio"><input type="radio" name="inorout" value="outdoors"> Outdoors </label><br /><br />
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal">Close</button>
+        <input type="submit" class="btn btn-primary" value="Save changes"></input>
+    </div>
+</form>
+</div>
+
+<a data-toggle="modal" class="btn-large btn-success" href='#regModal'>Register a new sample</a>
+
+{% endif %}
+
+<p/>
+<table class="table table-bordered table-striped table-hover"><body>
+<thead>
+<strong>
+<tr style="font-weight:bold"><td>Context</td><td>Identifier</td><td>Name</td><td>Status</td><td>description</td></tr>
+</strong>
+</thead>
+<tbody>
+{% for r in records %}
+    <tr>
+    <td>
+    <img class="img-polaroid" src="{{ url_for('static', filename=r.thumb)}}">
+    </td>
+    <td style="padding-top:3.5em;">{{ r.identifier }}</td>
+    <td style="padding-top:3.5em;">{{ r.name }}</td>
+    <td style="padding-top:3.5em;">{% if r.audited %}Audited{% else %}Not audited{% endif %}</td>
+    <td style="padding-top:3.5em;">{{ r.description }}</td>
+    </tr>
+{% endfor %}
+</tbody></table>
+
+{% endblock %}
