@@ -33,44 +33,29 @@
                 be a genius or a professional to keep a blog running.</p>
 
         <p><a class="btn btn-primary btn-large">Learn more &raquo;</a>
-			 
-
-
 {% if not username %}
-<!-- avatar with avatar change modal -->
-<div id="signupModal" class="modal hide fade" tabindex="-1"
-role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-<form action='/signup' method='post' enctype="multipart/form-data">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h3 id="myModalLabel">Sign up!</h3>
-    </div>
-    <div class="modal-body">
-    <form class="" action="/signup" method="post" enctype="multipart/form-data">
-    <input type="text" class="" placeholder="Username" name="username" size="15"></input>
-    <input type="text" class="" placeholder="Real name" name="realname" size="15"></input><b />
-    <input class="" placeholder="Password" type="password" name="password" size="15"></input>
-    <input class="" placeholder="Password (again)" type="password" name="password_check" size="15"></input><br />
-    <span class="btn-file"> Your avatar photo <input type="file" name="avatar" /></span><br /><br />    
-    </div>
-    <div class="modal-footer">
-        <button class="btn" data-dismiss="modal">Close</button>
-        <input type="submit" class="btn btn-primary" value="Save changes"></input>
-    </div>
-</form>
-</div>
-
-
-      <form class="well form-search" action="/login" method="post">
-        <h2>Please sign in</h2>
-        <input type="text" placeholder="username" name="username">
-        <input type="password" placeholder="Password" name="password">
-        <button class="btn btn-large btn-primary" type="submit">Sign in</button>
 		<a data-toggle="modal" class="btn btn-large btn-success" href="#signupModal">Sign up</a><br/>
-        <label class="checkbox">
-        <input type="checkbox" value="remember-me"> Remember me</input>
-        </label>
-      </form>
+        <!-- signup modal -->
+        <div id="signupModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <form action='/signup' method='post' enctype="multipart/form-data">
+            <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3 id="myModalLabel">Sign up!</h3>
+        </div>
+        <div class="modal-body">
+            <form class="" action="/signup" method="post" enctype="multipart/form-data">
+                <input type="text" class="" placeholder="Username" name="username" size="15"></input>
+                <input type="text" class="" placeholder="Real name" name="realname" size="15"></input><b />
+                <input class="" placeholder="Password" type="password" name="password" size="15"></input>
+                <input class="" placeholder="Password (again)" type="password" name="password_check" size="15"></input><br />
+                <span class="btn-file"> Your avatar photo <input type="file" name="avatar" /></span><br /><br />    
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal">Close</button>
+                <input type="submit" class="btn btn-primary" value="Save changes"></input>
+            </div>
+            </form>
+        </div>
 {% else %}
 		  <a class="btn btn-large btn-primary" href="/logout">logout</a>
 {% endif %}
