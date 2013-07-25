@@ -134,18 +134,28 @@ def get_user_articles( username ) :
     """
     Get summary information for records registered by a user.
     """
-    cur = g.db.execute('select date, headline, active from articles where user = ? order by id desc', (username,) )
+    cur = g.db.execute('select id, date, headline, active from articles where user = ? order by id desc', (username,) )
     rows = cur.fetchall()
-    records = []
+    articles = []
     
     # bag 'em up
     for row in rows :
-        record = dict(  date        = row[0],
-                        headline    = row[1],
-                        active      = row[2] )
-        records.append(record)
+        article = dict( id          = row[0],
+                        date        = row[1],
+                        headline    = row[2],
+                        active      = row[3] )
+        articles.append(article)
         
-    return records
+    return articles
+
+def change_article_status( id, status ) :
+    """
+    Set an article's status to active. The value for status must be
+    either True or False.
+    """
+    print id, status
+    g.db.execute('update articles set active = ? where id = ?', (status, id) )
+    g.db.commit()
 
 def add_user( form ) :
     """
@@ -330,9 +340,42 @@ def edit( id ) :
         flash( 'You must be logged in to edit articles.', 'alert-error' )
         return redirect( url_for( 'index' ) )
 
+    article = get_article_by_id( id )
+
+    if not article :
+        flash( 'That article doesn\'t exist.', 'alert-error' )
+        username = session['username']
+        return redirect( url_for( 'profile', username=username ) )   
+ 
     return render_template( 'edit.html',
                             article = get_article_by_id( id ) )
- 
+
+@app.route( '/activate/<id>', methods = ['GET'] )
+def activate( id ) :
+    """
+    Activate an article.
+    """
+    # You have to be logged in to chage article status
+    if not 'username' in session :
+        flash( 'You must be logged in to change an article\'s status.', 'alert-error' )
+        return redirect( url_for( 'index' ) )
+
+    change_article_status( id, True )
+    return redirect( url_for( 'profile', username=session['username'] ) )
+
+@app.route( '/deactivate/<id>', methods = ['GET'] )
+def deactivate( id ) :
+    """
+    Deactivate an article.
+    """
+    # You have to be logged in to chage article status
+    if not 'username' in session :
+        flash( 'You must be logged in to change an article\'s status.', 'alert-error' )
+        return redirect( url_for( 'index' ) )
+
+    change_article_status( id, False )
+    return redirect( url_for( 'profile', username=session['username'] ) )
+
 @app.route( '/newavatar', methods = ['POST'] )
 def newavatar() :
     """
