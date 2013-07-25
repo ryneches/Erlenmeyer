@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block body %}
+Editing article {{ article.headline }} 
+
+<form action='/publish' method='post' enctype="multipart/form-data">
+<form class="well form-search" action="/publish" method="post" enctype="multipart/form-data">
+<input type="text" class="input-medium" placeholder="Headline" value="{{ article.headline }}" name="headline" size="15"></input>
+<input type="text" class="input-medium" placeholder="Article" value="{{ article.body }}" name="body" size="140"></input><br /><br />
+<input type="text" class="input-medium" placeholder="Latitude" value="{{ article.lat }}" name="lat" size="140"></input>
+<input type="text" class="input-medium" placeholder="Longitude" value="{{ article.lng }}" name="lng" size="140"></input>
+<input type="submit" class="btn btn-primary" value="Save changes"></input>
+</form>
+{% endblock %}
