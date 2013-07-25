@@ -44,8 +44,8 @@
     <form class="well form-search" action="/publish" method="post" enctype="multipart/form-data">
     <input type="text" class="input-medium" placeholder="Headline" name="headline" size="15"></input>
     <input type="text" class="input-medium" placeholder="Article" name="body" size="140"></input><br /><br />
-    <input type="text" class="input-medium" placeholder="Latitude" name="lat" size="140"></input><br /><br />
-    <input type="text" class="input-medium" placeholder="Longitude" name="lng" size="140"></input><br /><br />
+    <input type="text" class="input-medium" placeholder="Latitude" name="lat" size="140"></input>
+    <input type="text" class="input-medium" placeholder="Longitude" name="lng" size="140"></input>
     </div>
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal">Close</button>
@@ -62,14 +62,13 @@
 <table class="table table-bordered table-striped table-hover"><body>
 <thead>
 <strong>
-<tr style="font-weight:bold"><td>Context</td><td>Identifier</td><td>Name</td><td>Status</td><td>description</td></tr>
+<tr style="font-weight:bold"><td>Title</td><td>Date</td><td>Status</td></tr>
 </strong>
 </thead>
 <tbody>
 {% for r in articles %}
     <tr>
     <td style="padding-top:3.5em;">{{ r.headline }}</td>
-    <td style="padding-top:3.5em;">{{ r.user }}</td>
     <td style="padding-top:3.5em;">{{ r.date }}</td>
     <td style="padding-top:3.5em;">{% if r.active %}Published{% else %}Not Published{% endif %}</td>
     </tr>
