@@ -107,6 +107,29 @@ def get_user( username ) :
                     thumb       = row[4] )
     return user
 
+def get_article_by_id( id ) :
+    """
+    Get an article by ID.
+    """
+    cur = g.db.execute('select id, slug, user, date, headline, lat, lng, body, active from articles where id = ? order by id desc', (id,) )
+    row = cur.fetchone()
+    
+    # bail if the article isn't in there
+    if not row :
+        return False
+    
+    # bag it up
+    article = dict( id          = row[0],
+                    slug        = row[1],
+                    user        = row[2],
+                    date        = row[3],
+                    headline    = row[4],
+                    lat         = row[5],
+                    lng         = row[6],
+                    body        = row[7],
+                    active      = row[8] )
+    return article
+
 def get_user_articles( username ) :
     """
     Get summary information for records registered by a user.
@@ -287,7 +310,7 @@ def publish() :
             flash( 'Something has gone wrong. Sample not registered.', 'alert-error' )
             return redirect( url_for( 'register') )
         else :
-            flash( 'Article <i>' + request.form['headline'] + '</i> uploaded!', 'alert-success' )
+            flash( 'Article ' + request.form['headline'] + ' uploaded!', 'alert-success' )
             return redirect( url_for( 'profile', username=username ) )
     else :
         if 'username' in session :
@@ -297,6 +320,19 @@ def publish() :
         else :
             return render_template( 'register.html' )
 
+@app.route( '/edit/<id>', methods = ['GET'] )
+def edit( id ) :
+    """
+    Edit an existing article.
+    """
+    # You have to be logged in to edit articles
+    if not 'username' in session :
+        flash( 'You must be logged in to edit articles.', 'alert-error' )
+        return redirect( url_for( 'index' ) )
+
+    return render_template( 'edit.html',
+                            article = get_article_by_id( id ) )
+ 
 @app.route( '/newavatar', methods = ['POST'] )
 def newavatar() :
     """
