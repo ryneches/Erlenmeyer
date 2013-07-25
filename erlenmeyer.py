@@ -270,8 +270,8 @@ def signup() :
         else :
             return render_template( 'signup.html' )
 
-@app.route( '/register', methods = ['GET', 'POST'] )
-def register() :
+@app.route( '/publish', methods = ['GET', 'POST'] )
+def publish() :
     """
     Register a new sample.
     """
@@ -282,12 +282,12 @@ def register() :
     username = session['username']
     if request.method == 'POST' :
         user = get_user( username )
-        result = add_record( user, request.form )
+        result = add_article( user, request.form )
         if not result :
             flash( 'Something has gone wrong. Sample not registered.', 'alert-error' )
             return redirect( url_for( 'register') )
         else :
-            flash( 'Sample ' + request.form['identifier'] + ' registered!', 'alert-success' )
+            flash( 'Article <i>' + request.form['headline'] + '</i> uploaded!', 'alert-success' )
             return redirect( url_for( 'profile', username=username ) )
     else :
         if 'username' in session :
