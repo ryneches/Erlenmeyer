@@ -326,16 +326,16 @@ def profile( username ) :
     if not user :
         return 'User does not exist.'
     else :
-        records = get_user_articles( username )
+        articles = get_user_articles( username )
         if 'username' in session :
             return render_template( 'profile.html', 
                                     user = user,
-                                    records = records,
+                                    articles = articles,
                                     authenticated = True )
         else :
             return render_template( 'profile.html',
                                     user = user,
-                                    records = records ) 
+                                    articles = articles ) 
 
 @app.route( '/favicon.ico' )
 def favicon() :

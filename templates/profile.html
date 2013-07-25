@@ -41,22 +41,9 @@
         <h3 id="myModalLabel">Register a sample!</h3>
     </div>
     <div class="modal-body">
-    <form class="well form-search" action="/register" method="post" enctype="multipart/form-data">
-    <input type="text" class="input-medium" placeholder="Sample name" name="name" size="15"></input>
-    <input type="text" class="input-medium" placeholder="Sample description" name="description" size="140"></input><br /><br />
-    <input type="text" class="input-medium" placeholder="Identifier" name="identifier" size="15"></input>
-    <input type="text" class="input-medium" placeholder="Context type" name="context_type" size="15"></input><br /><br />
-    <input type="text" class="input-medium" placeholder="Latitude" name="lat" size="15"></input>
-    <input type="text" class="input-medium" placeholder="Longitude" name="lng" size="15"></input><br /><br />
-    <input type="text" class="input-medium" placeholder="Surface material" name="surface_material" size="15"></input>
-    <input type="text" class="input-medium" placeholder="Surface condition" name="surface_condition" size="15"></input><br /><br />
-    <input type="text" class="input-medium" placeholder="Surface humidity" name="surface_humidity" size="15"></input>
-    <input type="text" class="input-medium" placeholder="Temperature" name="temp" size="15"></input><br /><br />
-    <span class=""> Closeup photo <input type="file" name="closeup" /></span><br /><br />
-    <span class=""> Context photo <input type="file" name="context" /></span><br /><br />
-    <label class="checkbox"><input type="checkbox" name="direct_sunlight" /> Direct sunlight </label><br />
-    <label class="radio"><input type="radio" name="inorout" value="indoors" /> Indoors </label>
-    <label class="radio"><input type="radio" name="inorout" value="outdoors"> Outdoors </label><br /><br />
+    <form class="well form-search" action="/publish" method="post" enctype="multipart/form-data">
+    <input type="text" class="input-medium" placeholder="Headline" name="headline" size="15"></input>
+    <input type="text" class="input-medium" placeholder="Article" name="body" size="140"></input><br /><br />
     </div>
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal">Close</button>
@@ -77,15 +64,12 @@
 </strong>
 </thead>
 <tbody>
-{% for r in records %}
+{% for r in articles %}
     <tr>
-    <td>
-    <img class="img-polaroid" src="{{ url_for('static', filename=r.thumb)}}">
-    </td>
-    <td style="padding-top:3.5em;">{{ r.identifier }}</td>
-    <td style="padding-top:3.5em;">{{ r.name }}</td>
-    <td style="padding-top:3.5em;">{% if r.audited %}Audited{% else %}Not audited{% endif %}</td>
-    <td style="padding-top:3.5em;">{{ r.description }}</td>
+    <td style="padding-top:3.5em;">{{ r.headline }}</td>
+    <td style="padding-top:3.5em;">{{ r.user }}</td>
+    <td style="padding-top:3.5em;">{{ r.date }}</td>
+    <td style="padding-top:3.5em;">{% if r.active %}Published{% else %}Not Published{% endif %}</td>
     </tr>
 {% endfor %}
 </tbody></table>
