@@ -152,7 +152,6 @@ def change_article_status( id, status ) :
     Set an article's status to active. The value for status must be
     either True or False.
     """
-    print id, status
     g.db.execute('update articles set active = ? where id = ?', (status, id) )
     g.db.commit()
 
@@ -232,6 +231,14 @@ def add_article( user, form, thetime=False ) :
                 form['body'],
                 False )
     g.db.execute('insert into articles (slug, user, date, lat, lng, headline, body, active) values (?,?,?,?,?,?,?,?)', values )
+    g.db.commit()
+    return True
+
+def modify_article( id, body, headline ) :
+    """
+    Replace an article's headline and body.
+    """
+    g.db.execute('update articles set body=? and headline=? where id=?', (body, headline, id,) )
     g.db.commit()
     return True
 
@@ -321,12 +328,11 @@ def publish() :
     result = add_article( user, request.form )
     if not result :
         flash( 'Something has gone wrong. Article not saved.', 'alert-error' )
-        return redirect( url_for( 'register') )
     else :
         flash( 'Article ' + request.form['headline'] + ' uploaded!', 'alert-success' )
-        return redirect( url_for( 'profile', username=session['username'] ) )
+    return redirect( url_for( 'profile', username=session['username'] ) )
 
-@app.route( '/edit/<id>', methods = ['GET'] )
+@app.route( '/edit/<id>', methods = ['POST', 'GET'] )
 def edit( id ) :
     """
     Edit an existing article.
@@ -337,14 +343,35 @@ def edit( id ) :
         return redirect( url_for( 'index' ) )
     
     article = get_article_by_id( id )
+    username = session['username']
     
+    # route the user to a populated editing page
     if not article :
         flash( 'That article doesn\'t exist.', 'alert-error' )
-        username = session['username']
-        return redirect( url_for( 'profile', username=username ) )   
+        return redirect( url_for( 'profile', 
+                                  username = username ) )   
     
-    return render_template( 'edit.html',
-                            article = get_article_by_id( id ) )
+    if request.method == 'GET' :
+        return render_template( 'edit.html',
+                                username = username,
+                                article = get_article_by_id( id ) )
+    
+    # get the new article body and headline and store it
+    if request.method == 'POST' :
+        
+        body     = request.form['body']
+        headline = request.form['headline']
+        result = modify_article( id, body, headline )
+        
+        if not result :
+            flash( 'Something has gone wrong. Article not updated.', 'alert-error' )
+        else :
+            flash( 'Article ' + headline + ' updated!', 'alert-success' )
+        
+        # land the user back in the profile page
+        return redirect( url_for( 'profile', username=session['username'] ) )
+
+       
 
 @app.route( '/activate/<id>', methods = ['GET'] )
 def activate( id ) :
@@ -376,6 +403,8 @@ def deactivate( id ) :
 def get_article( year, month, day, slug ) :
     """
     Harf up an article.
+
+    This is a stub.
     """
     print year, month, day
     return render_template( 'blog.html',
