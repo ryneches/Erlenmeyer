@@ -7,7 +7,6 @@ from flask import g, flash, send_from_directory
 from os import path
 from md5 import md5
 from datetime import datetime
-import time
 from contextlib import closing
 from werkzeug import secure_filename
 from PIL import Image
@@ -214,14 +213,19 @@ def update_avatar( username, file ) :
     g.db.execute('update users set avatar=? and thumb=? where username=?', values )
     g.db.commit()
 
-def add_article( user, form ) :
+def add_article( user, form, thetime=False ) :
     """
     Add a new article.
     """
+    if thetime :
+        t = thetime
+    else :
+        t = datetime.now()
+    
     # all new articles are created with active=False
     values = (  slugify(form['headline']),
                 user['username'],
-                int(time.time()),
+                t,
                 float(form['lat']),
                 float(form['lng']),
                 form['headline'],
@@ -303,32 +307,24 @@ def signup() :
         else :
             return render_template( 'signup.html' )
 
-@app.route( '/publish', methods = ['GET', 'POST'] )
+@app.route( '/publish', methods = ['POST'] )
 def publish() :
     """
-    Register a new sample.
+    Publish a new article.
     """
+    # You have to be loggined in to publish stuff
     if not 'username' in session :
         flash( 'You must create an account to register samples!', 'alert-error' )
         return redirect( url_for( 'index' ) )
     
-    username = session['username']
-    if request.method == 'POST' :
-        user = get_user( username )
-        result = add_article( user, request.form )
-        if not result :
-            flash( 'Something has gone wrong. Sample not registered.', 'alert-error' )
-            return redirect( url_for( 'register') )
-        else :
-            flash( 'Article ' + request.form['headline'] + ' uploaded!', 'alert-success' )
-            return redirect( url_for( 'profile', username=username ) )
+    user = get_user( session['username'] )
+    result = add_article( user, request.form )
+    if not result :
+        flash( 'Something has gone wrong. Article not saved.', 'alert-error' )
+        return redirect( url_for( 'register') )
     else :
-        if 'username' in session :
-            return render_template( 'register.html',
-                                    username = session['username'],
-                                    authenticated = True )
-        else :
-            return render_template( 'register.html' )
+        flash( 'Article ' + request.form['headline'] + ' uploaded!', 'alert-success' )
+        return redirect( url_for( 'profile', username=session['username'] ) )
 
 @app.route( '/edit/<id>', methods = ['GET'] )
 def edit( id ) :
@@ -339,14 +335,14 @@ def edit( id ) :
     if not 'username' in session :
         flash( 'You must be logged in to edit articles.', 'alert-error' )
         return redirect( url_for( 'index' ) )
-
+    
     article = get_article_by_id( id )
-
+    
     if not article :
         flash( 'That article doesn\'t exist.', 'alert-error' )
         username = session['username']
         return redirect( url_for( 'profile', username=username ) )   
- 
+    
     return render_template( 'edit.html',
                             article = get_article_by_id( id ) )
 

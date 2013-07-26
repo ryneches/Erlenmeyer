@@ -13,7 +13,7 @@ create table articles (
     id integer primary key autoincrement,
     slug                string not null,
     user                string not null,
-    date                integer not null,
+    date                date not null,
     headline            string not null,
     lat                 real,
     lng                 real,

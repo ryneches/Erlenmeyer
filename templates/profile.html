@@ -68,9 +68,9 @@
 <tbody>
 {% for r in articles %}
     <tr>
-    <td style="padding-top:3.5em;"><a href="/edit/{{ r.id }}">{{ r.headline }}</a></td>
-    <td style="padding-top:3.5em;">{{ r.date }}</td>
-    <td style="padding-top:3.5em;">{% if r.active %}Published : <a href="/deactivate/{{ r.id }}">Un-Publish</a>{% else %}Un-Published : <a href="/activate/{{ r.id }}">Publish</a>{% endif %}</td>
+    <td><a href="/edit/{{ r.id }}">{{ r.headline }}</a></td>
+    <td>{{ r.date }}</td>
+    <td>{% if r.active %}Published : <a href="/deactivate/{{ r.id }}">Un-Publish</a>{% else %}Un-Published : <a href="/activate/{{ r.id }}">Publish</a>{% endif %}</td>
     </tr>
 {% endfor %}
 </tbody></table>
