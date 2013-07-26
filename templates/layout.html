@@ -67,7 +67,7 @@
               <li><a data-toggle="modal" href="#aboutModal">About</a></li>
               <li><a data-toggle="modal" href="#contactModal">Contact</a></li>
               {% if authenticated %}
-				  <li><a href="{{ url_for('profile', username=user.username) }}">My profile</a></li>
+				  <li><a href="{{ url_for('profile', username=username) }}">My profile</a></li>
 				  <li><a href="{{ url_for('logout') }}">Log out</a></li>
               {% else %}
                   <li><a data-toggle="modal" href="#loginModal">Log in</a></li>

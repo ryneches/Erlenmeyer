@@ -376,6 +376,20 @@ def deactivate( id ) :
     change_article_status( id, False )
     return redirect( url_for( 'profile', username=session['username'] ) )
 
+@app.route( '/<year>/<month>/<day>/<slug>', methods = ['GET'] )
+def get_article( year, month, day, slug ) :
+    """
+    Harf up an article.
+    """
+    print year, month, day
+    return render_template( 'blog.html',
+                            year = year,
+                            month = month,
+                            day = day,
+                            slug = slug )
+
+
+
 @app.route( '/newavatar', methods = ['POST'] )
 def newavatar() :
     """
@@ -409,11 +423,11 @@ def profile( username ) :
         if 'username' in session :
             return render_template( 'profile.html', 
                                     user = user,
+                                    username = username,
                                     articles = articles,
                                     authenticated = True )
         else :
             return render_template( 'profile.html',
-                                    user = user,
                                     articles = articles ) 
 
 @app.route( '/favicon.ico' )
