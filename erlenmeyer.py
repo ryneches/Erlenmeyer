@@ -371,8 +371,6 @@ def edit( id ) :
         # land the user back in the profile page
         return redirect( url_for( 'profile', username=session['username'] ) )
 
-       
-
 @app.route( '/activate/<id>', methods = ['GET'] )
 def activate( id ) :
     """
