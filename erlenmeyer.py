@@ -118,15 +118,8 @@ def get_article_by_id( id ) :
         return False
     
     # bag it up
-    article = dict( id          = row[0],
-                    slug        = row[1],
-                    user        = row[2],
-                    date        = row[3],
-                    headline    = row[4],
-                    lat         = row[5],
-                    lng         = row[6],
-                    body        = row[7],
-                    active      = row[8] )
+    keys = [ 'id', 'slug', 'user', 'date', 'headline', 'lat', 'lng', 'body', 'active' ]
+    article = dict(zip( keys, row ))
     return article
 
 def get_user_articles( username ) :
@@ -238,6 +231,7 @@ def modify_article( id, body, headline ) :
     """
     Replace an article's headline and body.
     """
+    print id, '|', body, '|', headline
     g.db.execute('update articles set body=? and headline=? where id=?', (body, headline, id,) )
     g.db.commit()
     return True
@@ -354,7 +348,7 @@ def edit( id ) :
     if request.method == 'GET' :
         return render_template( 'edit.html',
                                 username = username,
-                                article = get_article_by_id( id ) )
+                                article = article )
     
     # get the new article body and headline and store it
     if request.method == 'POST' :
