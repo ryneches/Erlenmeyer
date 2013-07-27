@@ -231,9 +231,10 @@ def modify_article( id, body, headline ) :
     """
     Replace an article's headline and body.
     """
-    print id, '|', body, '|', headline
-    g.db.execute('update articles set body=? and headline=? where id=?', (body, headline, id,) )
+    g.db.execute('update articles set body=? where id=?', (body, id,) )
+    g.db.execute('update articles set headline=? where id=?', (headline, id) )
     g.db.commit()
+    
     return True
 
 def valid_login( username, password ) :
