@@ -6,7 +6,7 @@ from flask import render_template
 from flask import g, flash, send_from_directory
 from os import path
 from md5 import md5
-from datetime import datetime
+from datetime import datetime, timedelta
 from contextlib import closing
 from werkzeug import secure_filename
 from PIL import Image
@@ -110,7 +110,7 @@ def get_article_by_id( id ) :
     """
     Get an article by ID.
     """
-    cur = g.db.execute('select id, slug, user, date, headline, lat, lng, body, active from articles where id = ? order by id desc', (id,) )
+    cur = g.db.execute('select id, slug, user, date, year, month, day, headline, lat, lng, body, active from articles where id = ? order by id desc', (id,) )
     row = cur.fetchone()
     
     # bail if the article isn't in there
@@ -118,9 +118,43 @@ def get_article_by_id( id ) :
         return False
     
     # bag it up
-    keys = [ 'id', 'slug', 'user', 'date', 'headline', 'lat', 'lng', 'body', 'active' ]
+    keys = [ 'id', 'slug', 'user', 'date', 'year', 'month', 'day', 'headline', 'lat', 'lng', 'body', 'active' ]
     article = dict(zip( keys, row ))
     return article
+
+def get_articles_by_date( year, month=False, day=False ) :
+    """
+    Get articles with a given date. Year is mandatory, month and day
+    are optional.
+    """
+    command = 'select id, slug, user, date, headline, lat, lng, body, active from articles where year = ? and '
+    
+    if month and not day :
+        # get all the articles for a given month
+        command = command + 'month = ? order by id desc'
+        cur = g.db.execute( command, (year, month,) ) 
+    if month and day :
+        # get all the articles for a given month and day
+        command = command + 'month = ? and day = ? order by id desc'
+        cur = g.db.execute( command, (year, month, day,) )
+    if not month and day :
+        # get all the articles for a given day for any month
+        # this doesn't make any sense, but we can do it...
+        command = commad + 'day = ? order by id desc'
+        cur = g.db.execute( command, (year, day,) )
+    
+    rows = cur.fetchall()
+
+    articles = []
+    # bag 'em up
+    for row in rows :
+        article = dict( id          = row[0],
+                        date        = row[1],
+                        headline    = row[2],
+                        active      = row[3] )
+        articles.append(article)
+        
+    return articles
 
 def get_user_articles( username ) :
     """
@@ -218,12 +252,15 @@ def add_article( user, form, thetime=False ) :
     values = (  slugify(form['headline']),
                 user['username'],
                 t,
+                t.year,
+                t.month,
+                t.day,
                 float(form['lat']),
                 float(form['lng']),
                 form['headline'],
                 form['body'],
                 False )
-    g.db.execute('insert into articles (slug, user, date, lat, lng, headline, body, active) values (?,?,?,?,?,?,?,?)', values )
+    g.db.execute('insert into articles (slug, user, date, year, month, day, lat, lng, headline, body, active) values (?,?,?,?,?,?,?,?,?,?,?)', values )
     g.db.commit()
     return True
 
@@ -375,7 +412,7 @@ def activate( id ) :
     if not 'username' in session :
         flash( 'You must be logged in to change an article\'s status.', 'alert-error' )
         return redirect( url_for( 'index' ) )
-
+    
     change_article_status( id, True )
     return redirect( url_for( 'profile', username=session['username'] ) )
 
@@ -388,7 +425,7 @@ def deactivate( id ) :
     if not 'username' in session :
         flash( 'You must be logged in to change an article\'s status.', 'alert-error' )
         return redirect( url_for( 'index' ) )
-
+    
     change_article_status( id, False )
     return redirect( url_for( 'profile', username=session['username'] ) )
 
@@ -406,7 +443,16 @@ def get_article( year, month, day, slug ) :
                             day = day,
                             slug = slug )
 
-
+@app.route( '/<year>/', methods = ['GET'] )
+def get_year_articles( year ) :
+    """
+    Harf up some articles for a given year.
+    """
+    articles = get_articles_by_date( year )
+    
+    return render_template( 'blog.html',
+                            articles = articles,
+                            year = year )
 
 @app.route( '/newavatar', methods = ['POST'] )
 def newavatar() :
