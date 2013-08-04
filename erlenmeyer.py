@@ -25,7 +25,6 @@ PASSWORD = 'default'
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 DEFAULT_AVATAR = 'shanana.png'
-VALID_IDENTIFIERS = 'ids.txt'
 THUMB_SIZE = 128
 #SERVER_NAME = '/erlenmeyer'
 
