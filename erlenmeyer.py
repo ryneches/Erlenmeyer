@@ -29,6 +29,10 @@ VALID_IDENTIFIERS = 'ids.txt'
 THUMB_SIZE = 128
 #SERVER_NAME = '/erlenmeyer'
 
+# globals
+ARTICLE_COLS = ['id', 'slug', 'username', 'date', 'headline', 'lat', 'lng', 'body', 'active' ]
+USER_COLS    = ['id', 'username', 'password', 'realname', 'avatar', 'thumb']
+
 app = Flask(__name__)
 app.config.from_object(__name__)
 
@@ -91,7 +95,8 @@ def get_user( username ) :
     """
     Get the details on a user.
     """
-    cur = g.db.execute('select username, password, realname, avatar, thumb from users where username = ? order by id desc', (username,) )
+    cur = g.db.execute('select ' + ', '.join(USER_COLS) + ' from users where username = ? order by id desc', 
+                        (username,) )
     row = cur.fetchone()
     
     # the user isn't in the database
@@ -99,18 +104,14 @@ def get_user( username ) :
         return False
     
     # bag it up
-    user = dict(    username    = row[0],
-                    password    = row[1],
-                    realname    = row[2],
-                    avatar      = row[3],
-                    thumb       = row[4] )
-    return user
+    return dict( zip( USER_COLS, row ) )
 
 def get_article_by_id( id ) :
     """
     Get an article by ID.
     """
-    cur = g.db.execute('select id, slug, user, date, year, month, day, headline, lat, lng, body, active from articles where id = ? order by id desc', (id,) )
+    cur = g.db.execute('select ' + ', '.join(ARTICLE_COLS) + ' from articles where id = ? order by id desc',
+                        (id,) )
     row = cur.fetchone()
     
     # bail if the article isn't in there
@@ -118,40 +119,43 @@ def get_article_by_id( id ) :
         return False
     
     # bag it up
-    keys = [ 'id', 'slug', 'user', 'date', 'year', 'month', 'day', 'headline', 'lat', 'lng', 'body', 'active' ]
-    article = dict(zip( keys, row ))
-    return article
+    return dict( zip( ARTICLE_COLS, row ) )
 
 def get_articles_by_date( year, month=False, day=False ) :
     """
     Get articles with a given date. Year is mandatory, month and day
     are optional.
     """
-    command = 'select id, slug, user, date, headline, lat, lng, body, active from articles where year = ? and '
+    year = format( int(year), '04d' )
     
+    if not month and not day :
+        date_sub = '%Y'
+        date_str = year
     if month and not day :
-        # get all the articles for a given month
-        command = command + 'month = ? order by id desc'
-        cur = g.db.execute( command, (year, month,) ) 
+        # make sure month string has padded zeros
+        month = format( int(month), '02d' )
+        date_sub = '%Y %m'
+        date_str = ' '.join( (year, month) )
     if month and day :
-        # get all the articles for a given month and day
-        command = command + 'month = ? and day = ? order by id desc'
-        cur = g.db.execute( command, (year, month, day,) )
+        month    = format( int(month), '02d' )
+        day      = format( int(day),   '02d' )
+        date_sub = '%Y %m %d'
+        date_str = ' '.join( (year, month, day) )
     if not month and day :
         # get all the articles for a given day for any month
         # this doesn't make any sense, but we can do it...
-        command = commad + 'day = ? order by id desc'
-        cur = g.db.execute( command, (year, day,) )
+        day      = format( int(day),   '02d' )
+        date_sub = '%Y %d'
+        date_str = ' '.join( (year, day) )
     
+    cur = g.db.execute( 'select ' + ', '.join(ARTICLE_COLS) + ' from articles where strftime( ?, date ) = ? order by id desc', 
+                        ( '\'date_sub\'', '\'date_str\'' ) )
     rows = cur.fetchall()
-
+    
     articles = []
     # bag 'em up
     for row in rows :
-        article = dict( id          = row[0],
-                        date        = row[1],
-                        headline    = row[2],
-                        active      = row[3] )
+        article = dict( zip( ARTICLE_COLS, row ) ) 
         articles.append(article)
         
     return articles
@@ -160,16 +164,14 @@ def get_user_articles( username ) :
     """
     Get summary information for records registered by a user.
     """
-    cur = g.db.execute('select id, date, headline, active from articles where user = ? order by id desc', (username,) )
+    cur = g.db.execute('select ' + ', '.join(ARTICLE_COLS) + ' from articles where username = ? order by id desc', 
+                        (username,) )
     rows = cur.fetchall()
     articles = []
     
     # bag 'em up
     for row in rows :
-        article = dict( id          = row[0],
-                        date        = row[1],
-                        headline    = row[2],
-                        active      = row[3] )
+        article = dict( zip( ARTICLE_COLS, row ) )
         articles.append(article)
         
     return articles
@@ -224,6 +226,7 @@ def add_user( form ) :
     # SQL is gross
     g.db.execute('insert into users (username, password, realname, avatar, thumb) values (?,?,?,?,?)', values )
     g.db.commit()
+    return True
 
 def update_avatar( username, file ) :
     
@@ -252,15 +255,12 @@ def add_article( user, form, thetime=False ) :
     values = (  slugify(form['headline']),
                 user['username'],
                 t,
-                t.year,
-                t.month,
-                t.day,
                 float(form['lat']),
                 float(form['lng']),
                 form['headline'],
                 form['body'],
                 False )
-    g.db.execute('insert into articles (slug, user, date, year, month, day, lat, lng, headline, body, active) values (?,?,?,?,?,?,?,?,?,?,?)', values )
+    g.db.execute('insert into articles (slug, username, date, lat, lng, headline, body, active) values (?,?,?,?,?,?,?,?)', values )
     g.db.commit()
     return True
 
@@ -307,6 +307,7 @@ def login() :
         username = request.form['username']
         password = request.form['password']
         if valid_login( username, password ) :
+            print 'valid login', username
             session['username'] = username
             return redirect(url_for('profile', username=username ))
         else :

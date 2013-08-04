@@ -12,11 +12,8 @@ drop table if exists articles;
 create table articles (
     id integer primary key autoincrement,
     slug                string not null,
-    user                string not null,
+    username            string not null,
     date                date not null,
-    year                int not null,
-    month               int not null,
-    day                 int not null,
     headline            string not null,
     lat                 real,
     lng                 real,
