@@ -147,10 +147,13 @@ def get_articles_by_date( year, month=False, day=False ) :
         date_sub = '%Y %d'
         date_str = ' '.join( (year, day) )
     
-    cur = g.db.execute( 'select ' + ', '.join(ARTICLE_COLS) + ' from articles where strftime( ?, date ) = ? order by id desc', 
-                        ( '\'date_sub\'', '\'date_str\'' ) )
+    command = 'select ' + ', '.join(ARTICLE_COLS)   \
+            + ' from articles where strftime( ?, date ) = ? order by id desc'
+ 
+    cur = g.db.execute( command, 
+                        ( '\'' + date_sub + '\'', '\'' + date_str + '\'' ) )
     rows = cur.fetchall()
-    
+  
     articles = []
     # bag 'em up
     for row in rows :
@@ -306,7 +309,6 @@ def login() :
         username = request.form['username']
         password = request.form['password']
         if valid_login( username, password ) :
-            print 'valid login', username
             session['username'] = username
             return redirect(url_for('profile', username=username ))
         else :
@@ -451,8 +453,7 @@ def get_year_articles( year ) :
     articles = get_articles_by_date( year )
     
     return render_template( 'blog.html',
-                            articles = articles,
-                            year = year )
+                            articles = articles )
 
 @app.route( '/newavatar', methods = ['POST'] )
 def newavatar() :
@@ -479,6 +480,7 @@ def profile( username ) :
     The user profile page.
     """
     user = get_user( username )
+    print user
     
     if not user :
         return 'User does not exist.'
