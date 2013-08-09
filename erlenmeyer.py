@@ -125,6 +125,7 @@ def get_articles_by_date( year, month=False, day=False, slug=False ) :
     Get articles with a given date. Year is mandatory, month, day
     and slug are optional.
     """
+    print year
     year = format( int(year), '04d' )
     
     if not month and not day :
@@ -426,7 +427,7 @@ def edit( id ) :
         # land the user back in the profile page
         return redirect( url_for( 'profile', username=session['username'] ) )
 
-@app.route( '/activate/<id>', methods = ['GET'] )
+@app.route( '/activate/<int:id>', methods = ['GET'] )
 def activate( id ) :
     """
     Activate an article.
@@ -439,7 +440,7 @@ def activate( id ) :
     change_article_status( id, True )
     return redirect( url_for( 'profile', username=session['username'] ) )
 
-@app.route( '/deactivate/<id>', methods = ['GET'] )
+@app.route( '/deactivate/<int:id>', methods = ['GET'] )
 def deactivate( id ) :
     """
     Deactivate an article.
@@ -452,24 +453,44 @@ def deactivate( id ) :
     change_article_status( id, False )
     return redirect( url_for( 'profile', username=session['username'] ) )
 
-@app.route( '/<year>/<month>/<day>/<slug>', methods = ['GET'] )
-def get_article( year, month, day, slug ) :
-    """
-    Harf up an article.
-
-    This is a stub.
-    """
-    articles = get_articles_by_date( year, month, day, slug )
-    return render_template( 'blog.html',
-                            articles = articles )
-
-@app.route( '/<year>/', methods = ['GET'] )
+@app.route( '/<int:year>', methods = ['GET'] )
 def get_year_articles( year ) :
     """
     Harf up some articles for a given year.
     """
     articles = get_articles_by_date( year )
     
+    return render_template( 'blog.html',
+                            articles = articles )
+
+@app.route( '/<int:year>/<int:month>', methods = ['GET'] )
+def get_year_month_articles( year, month ) :
+    """
+    Harf up some articles for a given year.
+    """
+    articles = get_articles_by_date( year, month=month )
+    
+    return render_template( 'blog.html',
+                            articles = articles )
+
+@app.route( '/<int:year>/<int:month>/<int:day>', methods = ['GET'] )
+def get_year_month_day_articles( year, month, day ) :
+    """
+    Harf up some articles for a given year.
+    """
+    articles = get_articles_by_date( year, month, day )
+    
+    return render_template( 'blog.html',
+                            articles = articles )
+
+@app.route( '/<int:year>/<int:month>/<int:day>/<slug>', methods = ['GET'] )
+def get_year_month_day_slug_articles( year, month, day, slug ) :
+    """
+    Harf up an article.
+
+    This is a stub.
+    """
+    articles = get_articles_by_date( year, month, day, slug )
     return render_template( 'blog.html',
                             articles = articles )
 
