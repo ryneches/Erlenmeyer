@@ -118,12 +118,12 @@ def get_article_by_id( id ) :
         return False
     
     # bag it up
-    return dict( zip( ARTICLE_COLS, row ) )
+    return append_YMD( dict( zip( ARTICLE_COLS, row ) ) )
 
-def get_articles_by_date( year, month=False, day=False ) :
+def get_articles_by_date( year, month=False, day=False, slug=False ) :
     """
-    Get articles with a given date. Year is mandatory, month and day
-    are optional.
+    Get articles with a given date. Year is mandatory, month, day
+    and slug are optional.
     """
     year = format( int(year), '04d' )
     
@@ -147,18 +147,29 @@ def get_articles_by_date( year, month=False, day=False ) :
         date_sub = '%Y %d'
         date_str = ' '.join( (year, day) )
     
-    command = 'select ' + ', '.join(ARTICLE_COLS)   \
+    if month and day and slug :
+        command = 'select ' + ', '.join(ARTICLE_COLS)   \
+            + ' from articles where strftime( ?, date ) = ? and slug = ? order by id desc'
+        cur = g.db.execute( command, 
+                          ( '\'' + date_sub + '\'',
+                            '\'' + date_str + '\'',
+                            slug ) )
+    else :
+        command = 'select ' + ', '.join(ARTICLE_COLS)   \
             + ' from articles where strftime( ?, date ) = ? order by id desc'
  
-    cur = g.db.execute( command, 
-                        ( '\'' + date_sub + '\'', '\'' + date_str + '\'' ) )
+        cur = g.db.execute( command, 
+                        ( '\'' + date_sub + '\'',
+                          '\'' + date_str + '\'' ) )
+
     rows = cur.fetchall()
   
     articles = []
     # bag 'em up
     for row in rows :
-        article = dict( zip( ARTICLE_COLS, row ) ) 
-        articles.append(article)
+        article = dict( zip( ARTICLE_COLS, row ) )
+        article = append_YMD( article )
+        articles.append( article )
         
     return articles
 
@@ -174,9 +185,19 @@ def get_user_articles( username ) :
     # bag 'em up
     for row in rows :
         article = dict( zip( ARTICLE_COLS, row ) )
-        articles.append(article)
+        article = append_YMD( article )
+        articles.append( article )
         
     return articles
+
+def append_YMD( article ) :
+    d = datetime.strptime( article['date'], '%Y-%m-%d %H:%M:%S.%f')
+    article['year']   = format( d.year,   '04d' )
+    article['month']  = format( d.month,  '02d' )
+    article['day']    = format( d.day,    '02d' )
+    article['hour']   = format( d.hour,   '02d' )
+    article['minute'] = format( d.minute, '02d' )
+    return article
 
 def change_article_status( id, status ) :
     """
@@ -438,12 +459,9 @@ def get_article( year, month, day, slug ) :
 
     This is a stub.
     """
-    print year, month, day
+    articles = get_articles_by_date( year, month, day, slug )
     return render_template( 'blog.html',
-                            year = year,
-                            month = month,
-                            day = day,
-                            slug = slug )
+                            articles = articles )
 
 @app.route( '/<year>/', methods = ['GET'] )
 def get_year_articles( year ) :
