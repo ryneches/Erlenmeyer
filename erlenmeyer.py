@@ -460,19 +460,29 @@ def get_year_articles( year ) :
     Harf up some articles for a given year.
     """
     articles = get_articles_by_date( year )
-    
-    return render_template( 'blog.html',
-                            articles = articles )
-
+    if not 'username' in session :
+        return render_template( 'blog.html',
+                                articles = articles )
+    else :
+        return render_template( 'blog.html',
+                                articles = articles,
+                                username = session['username'],
+                                authenticated = True )
+   
 @app.route( '/<int:year>/<int:month>', methods = ['GET'] )
 def get_year_month_articles( year, month ) :
     """
     Harf up some articles for a given year.
     """
     articles = get_articles_by_date( year, month=month )
-    
-    return render_template( 'blog.html',
-                            articles = articles )
+    if not 'username' in session :
+        return render_template( 'blog.html',
+                                articles = articles )
+    else :
+        return render_template( 'blog.html',
+                                articles = articles,
+                                username = session['username'],
+                                authenticated = True )
 
 @app.route( '/<int:year>/<int:month>/<int:day>', methods = ['GET'] )
 def get_year_month_day_articles( year, month, day ) :
@@ -480,9 +490,14 @@ def get_year_month_day_articles( year, month, day ) :
     Harf up some articles for a given year.
     """
     articles = get_articles_by_date( year, month, day )
-    
-    return render_template( 'blog.html',
-                            articles = articles )
+    if not 'username' in session :
+        return render_template( 'blog.html',
+                                articles = articles )
+    else :
+        return render_template( 'blog.html',
+                                articles = articles,
+                                username = session['username'],
+                                authenticated = True )
 
 @app.route( '/<int:year>/<int:month>/<int:day>/<slug>', methods = ['GET'] )
 def get_year_month_day_slug_articles( year, month, day, slug ) :
@@ -492,9 +507,15 @@ def get_year_month_day_slug_articles( year, month, day, slug ) :
     This is a stub.
     """
     articles = get_articles_by_date( year, month, day, slug )
-    return render_template( 'blog.html',
-                            articles = articles )
-
+    if not 'username' in session :
+        return render_template( 'blog.html',
+                                articles = articles )
+    else :
+        return render_template( 'blog.html',
+                                articles = articles,
+                                username = session['username'],
+                                authenticated = True )
+ 
 @app.route( '/newavatar', methods = ['POST'] )
 def newavatar() :
     """
