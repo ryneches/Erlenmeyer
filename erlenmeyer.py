@@ -519,7 +519,6 @@ def profile( username ) :
     The user profile page.
     """
     user = get_user( username )
-    print user
     
     if not user :
         return 'User does not exist.'
