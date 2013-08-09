@@ -3,9 +3,13 @@
 
 {% for r in articles %}
     {% if r.active %}
-        {{ r.headline }}
-        {{ r.date }}
+        <div class="well">
+        <h1>{{ r.headline }}</h1>
         {{ r.body }}
+        <hr>
+        Posted at {{ r.day }}/{{ r.month }}/{{ r.year }}
+        at {{ r.hour }}:{{ r.minute }} by {{ r.realname }}
+        </div>
     {% endif %}
 {% endfor %}
 
