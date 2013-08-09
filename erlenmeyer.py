@@ -410,7 +410,8 @@ def edit( id ) :
     if request.method == 'GET' :
         return render_template( 'edit.html',
                                 username = username,
-                                article = article )
+                                article = article,
+                                authenticated = True )
     
     # get the new article body and headline and store it
     if request.method == 'POST' :
