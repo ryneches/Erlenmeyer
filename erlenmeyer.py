@@ -388,7 +388,7 @@ def publish() :
         flash( 'Article ' + request.form['headline'] + ' uploaded!', 'alert-success' )
     return redirect( url_for( 'profile', username=session['username'] ) )
 
-@app.route( '/edit/<id>', methods = ['POST', 'GET'] )
+@app.route( '/edit/<int:id>', methods = ['POST', 'GET'] )
 def edit( id ) :
     """
     Edit an existing article.
@@ -541,5 +541,3 @@ def favicon() :
 if __name__ == '__main__' :
     app.debug = True
     app.run()
-
-
