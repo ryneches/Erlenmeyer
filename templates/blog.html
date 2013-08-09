@@ -7,8 +7,18 @@
         <h1>{{ r.headline }}</h1>
         {{ r.body }}
         <hr>
-        Posted at {{ r.day }}/{{ r.month }}/{{ r.year }}
-        at {{ r.hour }}:{{ r.minute }} by {{ r.realname }}
+        
+        <div class="media">
+        <div class="pull-left">
+        <a href="/user/{{ r.username }}">
+        <img class="img-circle media-object" src="{{ url_for( 'static', filename=r.thumb ) }}">
+        </a>
+        </div>
+        <div class="media-heading">
+        <h4>Posted by <a href="/user/{{ r.username}}">{{ r.realname }}</a>
+        on <a href="/{{ r.year }}/{{ r.month}}/{{ r.day }}">{{ r.day }}</a>/<a href="/{{ r.year }}/{{ r.month }}">{{ r.month }}</a>/<a href="/{{ r.year }}">{{ r.year }}</a>
+        at {{ r.hour }}:{{ r.minute }}</h4>
+        </div>
         </div>
     {% endif %}
 {% endfor %}

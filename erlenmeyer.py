@@ -193,11 +193,16 @@ def get_user_articles( username ) :
 
 def append_YMD( article ) :
     d = datetime.strptime( article['date'], '%Y-%m-%d %H:%M:%S.%f')
-    article['year']   = format( d.year,   '04d' )
-    article['month']  = format( d.month,  '02d' )
-    article['day']    = format( d.day,    '02d' )
-    article['hour']   = format( d.hour,   '02d' )
-    article['minute'] = format( d.minute, '02d' )
+    user = get_user( article['username'] )
+    article['year']     = format( d.year,   '04d' )
+    article['month']    = format( d.month,  '02d' )
+    article['day']      = format( d.day,    '02d' )
+    article['hour']     = format( d.hour,   '02d' )
+    article['minute']   = format( d.minute, '02d' )
+    article['username'] = user['username']
+    article['realname'] = user['realname']
+    article['avatar']   = user['avatar']
+    article['thumb']    = user['thumb']
     return article
 
 def change_article_status( id, status ) :
