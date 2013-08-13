@@ -19,7 +19,7 @@ intended to be simple enough for you to modify, improve, optimize,
 extend and hack yourself, even if you are not much of a web
 programmer. Because, like the author, you just want to write things
 and stick them on the internet, and you don't want your life to
-include words like, "deploy" and "migrate" in your life.
+include words like, "deploy" and "migrate."
 
 That said, it isn't really intended to be minimalist either.
 Erlenmeyer is designed to actually work. It is a People's Blogging
