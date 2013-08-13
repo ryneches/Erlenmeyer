@@ -14,7 +14,7 @@ import sqlite3
 import re
 from unicodedata import normalize
 
-# configuration
+# Flask configuration
 DATABASE = 'erlenmeyer.db'
 DEBUG = True
 TRAP_BAD_REQUEST_KEY_ERRORS = True
@@ -27,6 +27,9 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 DEFAULT_AVATAR = 'shanana.png'
 THUMB_SIZE = 128
 #SERVER_NAME = '/erlenmeyer'
+
+# Erlenmeyer configuration
+ALLOW_SIGNUP = True
 
 # globals
 ARTICLE_COLS = ['id', 'slug', 'username', 'date', 'headline', 'lat', 'lng', 'body', 'active' ]
@@ -357,6 +360,11 @@ def signup() :
     """
     Sign up a new user.
     """
+    # if user signup is disabled, bail
+    if not ALLOW_SIGNUP :
+        flash( 'Sorry, we\'re not taking any new users now!', 'alert-error' )
+        return redirect( url_for( 'index' ) )
+
     if request.method == 'POST' :
         username = request.form['username']
         try :
