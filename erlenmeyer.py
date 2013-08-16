@@ -273,10 +273,9 @@ def update_avatar( username, file ) :
     file_path = path.join( app.config['UPLOAD_FOLDER'], filename )
     file.save( file_path )
     thumb_path = make_thumbnail( file_path )
-    values = ( file_path, thumb_path, username )
-    g.db.execute('update users set avatar=? and thumb=? where username=?', values )
+    g.db.execute('update users set avatar=? where username=?', ( file_path, username) )
+    g.db.execute('update users set thumb=? where username=?', ( thumb_path, username ) )
     g.db.commit()
-    print values
 
 def add_article( user, form, thetime=False ) :
     """
