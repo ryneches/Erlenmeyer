@@ -32,6 +32,7 @@ THUMB_SIZE = 128
 
 # Erlenmeyer configuration
 ALLOW_SIGNUP = True
+DISQUS_SHORTNAME = 'ryneches'
 
 # globals
 ARTICLE_COLS = ['id', 'slug', 'username', 'date', 'headline', 'lat', 'lng', 'body', 'active' ]
@@ -208,6 +209,7 @@ def append_YMD( article ) :
     article['realname'] = user['realname']
     article['avatar']   = user['avatar']
     article['thumb']    = user['thumb']
+    article['url']      = '/' + '/'.join( ( article['year'], article['month'], article['day'], article['slug'] ) )
     article['body']     = Markup(article['body'])
     return article
 
@@ -297,6 +299,7 @@ def add_article( user, form, thetime=False ) :
                 False )
     g.db.execute('insert into articles (slug, username, date, lat, lng, headline, body, active) values (?,?,?,?,?,?,?,?)', values )
     g.db.commit()
+    
     return True
 
 def modify_article( id, body, headline ) :
@@ -524,13 +527,17 @@ def get_year_month_day_slug_articles( year, month, day, slug ) :
     """
     articles = get_articles_by_date( year, month, day, slug )
     if not 'username' in session :
-        return render_template( 'blog.html',
-                                articles = articles )
+        return render_template( 'comments.html',
+                                articles = articles,
+                                disqus_shortname = DISQUS_SHORTNAME,
+                                comments = True )
     else :
-        return render_template( 'blog.html',
+        return render_template( 'comments.html',
                                 articles = articles,
                                 username = session['username'],
-                                authenticated = True )
+                                authenticated = True,
+                                disqus_shortname = DISQUS_SHORTNAME,
+                                comments = True )
  
 @app.route( '/newavatar', methods = ['POST'] )
 def newavatar() :

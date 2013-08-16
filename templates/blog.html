@@ -4,7 +4,7 @@
 {% for r in articles %}
     {% if r.active %}
         <div class="well">
-        <h1>{{ r.headline }}</h1>
+        <h1><a href="{{ r.url }}">{{ r.headline }}</a></h1>
         {{ r.body }}
         
         <div class="media">
@@ -15,10 +15,20 @@
             <h4 class="media-heading">
             Posted by <a href="/user/{{ r.username}}">{{ r.realname }}</a>
             </h4>
-            <a href="/{{ r.year }}/{{ r.month}}/{{ r.day }}">{{ r.day }}</a>/<a href="/{{ r.year }}/{{ r.month }}">{{ r.month }}</a>/<a href="/{{ r.year }}">{{ r.year }}</a> at {{ r.hour }}:{{ r.minute }}</h4>
+            on <a href="/{{ r.year }}/{{ r.month}}/{{ r.day }}">{{ r.day }}</a>/<a href="/{{ r.year }}/{{ r.month }}">{{ r.month }}</a>/<a href="/{{ r.year }}">{{ r.year }}</a> at {{ r.hour }}:{{ r.minute }}</h4>
+            under a Creative Commons Attributuion License.
+            <p>
+            <a href="http://creativecommons.org/licenses/by/3.0/us/">
+            <img src="/static/img/by.svg">
+            </a>
+            <p>
         </div>
         </div>
         </div>
+        {% if comments %}
+            {% block comments %}
+            {% endblock %} 
+        {% endif %}
     {% endif %}
 {% endfor %}
 
