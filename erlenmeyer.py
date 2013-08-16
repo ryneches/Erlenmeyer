@@ -4,6 +4,7 @@ from flask import Flask
 from flask import request, session, redirect, url_for
 from flask import render_template
 from flask import g, flash, send_from_directory
+from flask import Markup
 from os import path
 from md5 import md5
 from datetime import datetime, timedelta
@@ -13,6 +14,7 @@ from PIL import Image
 import sqlite3
 import re
 from unicodedata import normalize
+import markdown
 
 # Flask configuration
 DATABASE = 'erlenmeyer.db'
@@ -206,6 +208,7 @@ def append_YMD( article ) :
     article['realname'] = user['realname']
     article['avatar']   = user['avatar']
     article['thumb']    = user['thumb']
+    article['body']     = Markup(article['body'])
     return article
 
 def change_article_status( id, status ) :
@@ -273,6 +276,7 @@ def update_avatar( username, file ) :
     values = ( file_path, thumb_path, username )
     g.db.execute('update users set avatar=? and thumb=? where username=?', values )
     g.db.commit()
+    print values
 
 def add_article( user, form, thetime=False ) :
     """
