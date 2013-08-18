@@ -528,11 +528,20 @@ def get_year_month_day_slug_articles( year, month, day, slug ) :
     This is a stub.
     """
     articles = get_articles_by_date( year, month, day, slug )
+    
+    # if the request has the parameter ?markdown, serve up the
+    # unprocessed article body of the first article that we find
+    if 'markdown' in request.args :
+        return articles[0]['body']
+    
+    # if no user is logged in, serve up a non-authenticated page...
     if not 'username' in session :
         return render_template( 'comments.html',
                                 articles = articles,
                                 disqus_shortname = DISQUS_SHORTNAME,
                                 comments = True )
+
+    # ...or an authenticated page.
     else :
         return render_template( 'comments.html',
                                 articles = articles,
