@@ -209,6 +209,8 @@ def append_YMD( article ) :
     article['realname'] = user['realname']
     article['avatar']   = user['avatar']
     article['thumb']    = user['thumb']
+    article['slug']     = str(article['slug'])
+    article['headline'] = str(article['headline'])
     article['url']      = '/' + '/'.join( ( article['year'], article['month'], article['day'], article['slug'] ) )
     article['body']     = Markup(article['body'])
     return article
