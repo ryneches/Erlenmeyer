@@ -1,8 +1,13 @@
 {% extends "layout.html" %}
 {% block body %}
+
+{% if article %}
 <h3>Editing article {{ article.headline }}</h3>
-<form action='/edit/{{ article.id}}' method='post' enctype="multipart/form-data">
-<form class="well form-search" action="/publish" method="post" enctype="multipart/form-data">
+<form action='/edit/{{ article.id}}' method='post' enctype='multipart/form-data'>
+{% else %}
+<h3>Editing new article</h3>
+<form action="/publish" method='post' enctype='multipart/form-data'>
+{% endif %}
 <input id="headline" type="text" class="input-medium" placeholder="Headline" name="headline" size="25"></input>
 <input id="lat" type="text" class="input-medium" placeholder="Latitude" name="lat" size="140" value="{{ article.lat }}"></input>
 <input id="lng" type="text" class="input-medium" placeholder="Longitude" name="lng" size="140" value="{{ article.lng }}"></input>
@@ -16,7 +21,9 @@
 
 <script>
     function stuffValues(){
+        {% if article %}
         $("#body").load("{{ article.url }}?markdown");
+        {% endif %}
         $("#headline").val("{{ article.headline }}");
         $("#geolocate").change(function(){
             if( this.checked ) {

@@ -390,7 +390,7 @@ def signup() :
         else :
             return render_template( 'signup.html' )
 
-@app.route( '/publish', methods = ['POST'] )
+@app.route( '/publish', methods = ['POST', 'GET'] )
 def publish() :
     """
     Publish a new article.
@@ -400,13 +400,22 @@ def publish() :
         flash( 'You must create an account to register samples!', 'alert-error' )
         return redirect( url_for( 'index' ) )
     
-    user = get_user( session['username'] )
-    result = add_article( user, request.form )
-    if not result :
-        flash( 'Something has gone wrong. Article not saved.', 'alert-error' )
-    else :
-        flash( 'Article ' + request.form['headline'] + ' uploaded!', 'alert-success' )
-    return redirect( url_for( 'profile', username=session['username'] ) )
+    username = session['username']   
+ 
+    if request.method == 'POST' :
+        user = get_user( username )
+        result = add_article( user, request.form )
+        if not result :
+            flash( 'Something has gone wrong. Article not saved.', 'alert-error' )
+        else :
+            flash( 'Article ' + request.form['headline'] + ' uploaded!', 'alert-success' )
+        return redirect( url_for( 'profile', username=username ) )
+
+    if request.method == 'GET' :
+        return render_template( 'edit.html',
+                                username = username,
+                                article = False,
+                                authenticated = True )
 
 @app.route( '/edit/<int:id>', methods = ['POST', 'GET'] )
 def edit( id ) :

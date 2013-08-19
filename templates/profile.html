@@ -33,29 +33,7 @@
 </a>
 
 {% if authenticated %}
-<!-- sample registration modal -->
-<div id="regModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-<form action='/publish' method='post' enctype="multipart/form-data">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h3 id="myModalLabel">Register a sample!</h3>
-    </div>
-    <div class="modal-body">
-    <form class="well form-search" action="/publish" method="post" enctype="multipart/form-data">
-    <input type="text" class="input-medium" placeholder="Headline" name="headline" size="15"></input>
-    <input type="text" class="input-medium" placeholder="Article" name="body" size="140"></input><br /><br />
-    <input type="text" class="input-medium" placeholder="Latitude" name="lat" size="140"></input>
-    <input type="text" class="input-medium" placeholder="Longitude" name="lng" size="140"></input>
-    </div>
-    <div class="modal-footer">
-        <button class="btn" data-dismiss="modal">Close</button>
-        <input type="submit" class="btn btn-primary" value="Save changes"></input>
-    </div>
-</form>
-</div>
-
-<a data-toggle="modal" class="btn-large btn-success" href='#regModal'>Write a new article!</a>
-
+<a data-toggle="modal" class="btn-large btn-success" href='/publish'>Write a new article!</a>
 {% endif %}
 
 <p/>
