@@ -4,11 +4,20 @@
 
 <form action='/edit/{{ article.id}}' method='post' enctype="multipart/form-data">
 <form class="well form-search" action="/publish" method="post" enctype="multipart/form-data">
-<input type="text" class="input-medium" placeholder="Headline" value="{{ article.headline }}" name="headline" size="15"></input>
-<textarea name="body" data-provide="markdown" rows="25" autofocus="true"></textarea>
+<input id="headline" type="text" class="input-medium" placeholder="Headline" name="headline" size="25"></input>
+<textarea id="body" name="body" data-provide="markdown" rows="25" autofocus="true"></textarea>
 <hr/>
 <input type="text" class="input-medium" placeholder="Latitude" value="{{ article.lat }}" name="lat" size="140"></input>
 <input type="text" class="input-medium" placeholder="Longitude" value="{{ article.lng }}" name="lng" size="140"></input>
 <input type="submit" class="btn btn-success" value="Save changes"></input>
 </form>
+
+<script>
+    function stuffValues(){
+        $("#body").load("{{ article.url }}?markdown");
+        $("#headline").val("{{ article.headline }}");
+    }
+    window.onload = stuffValues;
+</script>
+
 {% endblock %}
