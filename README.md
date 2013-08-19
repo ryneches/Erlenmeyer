@@ -28,5 +28,23 @@ able to keep it running herself with just a few basic tools and a
 calm, responsible attitude. One shouldn't need to be a genius or a
 professional to keep a blog running.
 
+## Credits and dependencies
+
+Erlenmeyer includes these awesome pieces of software :
+
+* [Bootstrap](http://getbootstrap.com/)
+* [markdown.js](https://github.com/evilstreak/markdown-js)
+* [jQuery](http://jquery.com/)
+* [Bootstrap-Markdown](http://toopay.github.io/bootstrap-markdown/)
+
+Erlenmeyer depends on these awesome pieces of software :
+
+* [Python](http://python.org)
+* [Flask](http://flask.pocoo.org/)
+* [PIL](http://www.pythonware.com/products/pil/)
+* [sqlite3](http://www.sqlite.org/)
+* [Python Markdown](https://pypi.python.org/pypi/Markdown)
+
+## Inspiration
 
 ![Erlenmeyer Flask](http://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Duran_erlenmeyer_flask_narrow_neck_50ml.jpg/170px-Duran_erlenmeyer_flask_narrow_neck_50ml.jpg)
