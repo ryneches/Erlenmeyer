@@ -212,7 +212,6 @@ def append_YMD( article ) :
     article['slug']     = str(article['slug'])
     article['headline'] = str(article['headline'])
     article['url']      = '/' + '/'.join( ( article['year'], article['month'], article['day'], article['slug'] ) )
-    article['body']     = Markup(article['body'])
     return article
 
 def change_article_status( id, status ) :
@@ -481,6 +480,11 @@ def get_year_articles( year ) :
     Harf up some articles for a given year.
     """
     articles = get_articles_by_date( year )
+
+    # process the markdown
+    for a in articles :
+        a['body'] = Markup( markdown.markdown( a['body'] ) )
+
     if not 'username' in session :
         return render_template( 'blog.html',
                                 articles = articles )
@@ -496,6 +500,11 @@ def get_year_month_articles( year, month ) :
     Harf up some articles for a given year.
     """
     articles = get_articles_by_date( year, month=month )
+
+    # process the markdown
+    for a in articles :
+        a['body'] = Markup( markdown.markdown( a['body'] ) )
+
     if not 'username' in session :
         return render_template( 'blog.html',
                                 articles = articles )
@@ -511,6 +520,11 @@ def get_year_month_day_articles( year, month, day ) :
     Harf up some articles for a given year.
     """
     articles = get_articles_by_date( year, month, day )
+
+    # process the markdown
+    for a in articles :
+        a['body'] = Markup( markdown.markdown( a['body'] ) )
+
     if not 'username' in session :
         return render_template( 'blog.html',
                                 articles = articles )
@@ -533,6 +547,10 @@ def get_year_month_day_slug_articles( year, month, day, slug ) :
     # unprocessed article body of the first article that we find
     if 'markdown' in request.args :
         return articles[0]['body']
+    
+    # otherwise, we process the markdown
+    for a in articles :
+        a['body'] = Markup( markdown.markdown( a['body'] ) )
     
     # if no user is logged in, serve up a non-authenticated page...
     if not 'username' in session :
