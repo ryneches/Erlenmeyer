@@ -7,15 +7,22 @@
 <input id="headline" type="text" class="input-medium" placeholder="Headline" name="headline" size="25"></input>
 <textarea id="body" name="body" data-provide="markdown" rows="25" autofocus="true"></textarea>
 <hr/>
-<input type="text" class="input-medium" placeholder="Latitude" value="{{ article.lat }}" name="lat" size="140"></input>
-<input type="text" class="input-medium" placeholder="Longitude" value="{{ article.lng }}" name="lng" size="140"></input>
+<input id="lat" type="text" class="input-medium" placeholder="Latitude" name="lat" size="140"></input>
+<input id="lng" type="text" class="input-medium" placeholder="Longitude" name="lng" size="140"></input>
 <input type="submit" class="btn btn-success" value="Save changes"></input>
 </form>
 
 <script>
+    function stuffPosition(position) {
+        $("#lat").val( position.coords.latitude );
+        $("#lng").val( position.coords.longitude );
+    }
     function stuffValues(){
         $("#body").load("{{ article.url }}?markdown");
         $("#headline").val("{{ article.headline }}");
+        if(navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(stuffPosition);
+        }
     }
     window.onload = stuffValues;
 </script>
