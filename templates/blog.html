@@ -6,7 +6,7 @@
         <div class="well erlenmeyer-article">
         <h1><a href="{{ r.url }}">{{ r.headline }}</a></h1>
         <div class="article-markdown">
-        {{ r.body }}
+        {{ r.html }}
         </div>
         <hr/>
         <div class="media">
@@ -33,16 +33,5 @@
         {% endif %}
     {% endif %}
 {% endfor %}
-
-<script>
-    function stuffCaptions () {
-        $( '.article-markdown > p > img' ).each( function() {
-            /*$( this ).wrap( "<li class=\"thumbnail\" />" ).wrap(  * "<ul class=\"thumbnails\" />" ) ;*/
-            $( this ).wrap( "<div class=\"polaroid\" />" );
-            $( "<p class=\"caption\">" + $(this).attr("alt") + "</p>" ).insertAfter( $(this) );
-        });
-    }
-    window.onload = stuffCaptions;
-</script>
 
 {% endblock %}
