@@ -14,7 +14,7 @@ from PIL import Image
 import sqlite3
 import re
 from unicodedata import normalize
-import pypandoc
+import pandoc
 
 # Flask configuration
 DATABASE = 'erlenmeyer.db'
@@ -35,8 +35,8 @@ ALLOW_SIGNUP = True
 DISQUS_SHORTNAME = 'ryneches'
 
 # globals
-ARTICLE_COLS = ['id', 'slug', 'username', 'date', 'headline', 'lat', 'lng', 'body', 'active' ]
-USER_COLS    = ['id', 'username', 'password', 'realname', 'avatar', 'thumb']
+ARTICLE_COLS = [ 'id', 'slug', 'username', 'date', 'headline', 'lat', 'lng', 'body', 'active' ]
+USER_COLS    = [ 'id', 'username', 'password', 'realname', 'avatar', 'thumb' ]
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -74,6 +74,14 @@ def slugify(text, delim=u'-'):
         if word:
             result.append(word)
     return unicode(delim.join(result))
+
+
+def md_to_html( md ) :
+    doc = pandoc.Document()
+    doc.add_argument( 'mathjax' )
+    doc.add_argument( 'ascii' )
+    doc.markdown = md
+    return unicode( doc.html )
 
 @app.before_request
 def before_request():
@@ -212,7 +220,7 @@ def append_YMD( article ) :
     article['slug']     = str(article['slug'])
     article['headline'] = str(article['headline'])
     article['url']      = '/' + '/'.join( ( article['year'], article['month'], article['day'], article['slug'] ) )
-    article['html']     = Markup( pypandoc.convert( article['body'], 'html', format='md' ) )
+    article['html']     = Markup( md_to_html( article['body'] ) )
     
     return article
 
