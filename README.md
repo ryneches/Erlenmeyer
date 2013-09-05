@@ -43,7 +43,8 @@ Erlenmeyer depends on these awesome pieces of software :
 * [Flask](http://flask.pocoo.org/)
 * [PIL](http://www.pythonware.com/products/pil/)
 * [sqlite3](http://www.sqlite.org/)
-* [Python Markdown](https://pypi.python.org/pypi/Markdown)
+* [pandoc](http://johnmacfarlane.net/pandoc/)
+* [pyandoc](https://github.com/kennethreitz/pyandoc)
 
 ## Inspiration
 
