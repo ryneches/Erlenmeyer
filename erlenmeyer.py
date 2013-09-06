@@ -80,6 +80,7 @@ def md_to_html( md ) :
     doc = pandoc.Document()
     doc.add_argument( 'mathjax' )
     doc.add_argument( 'ascii' )
+    doc.add_argument( 'indented-code-classes=prettyprint,linenums:1' )
     doc.markdown = md
     return unicode( doc.html )
 
