@@ -15,12 +15,13 @@
             }
         });
     </script>
-    <!-- <script src="{{ url_for('static', filename='js/MathJax.js')}}"></script> -->
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script> 
+    <script src="{{ url_for('static', filename='js/MathJax.js', config='TeX-AMS-MML_HTMLorMML')}}"></script>
+    <!-- <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script> -->
     <!-- Le styles -->
     <link href="{{ url_for('static', filename='css/bootstrap.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/bootstrap-markdown.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/erlenmeyer.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/prettify.css') }}" rel="stylesheet">
     <style>
       body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
@@ -214,5 +215,6 @@
     <script src="{{ url_for('static', filename='js/bootstrap-typeahead.js')}}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap-markdown.js')}}"></script>
     <script src="{{ url_for('static', filename='js/markdown.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/prettify.js')}}"></script>
   </body>
 </html>
