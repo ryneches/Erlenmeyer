@@ -300,13 +300,25 @@ def add_article( user, form, thetime=False ) :
     else :
         t = datetime.now()
     
+    # handle empty string for lat and lng
+    try :
+        lat = float(form['lat'])
+        lng = float(form['lng'])
+    except ValueError :
+        lat = float('nan')
+        lng = float('nan')
+   
+    # handle empty string for headline
+    if not form['headline'] :
+        headline = u'Untitled article'
+    
     # all new articles are created with active=False
-    values = (  slugify(form['headline']),
+    values = (  slugify(headline),
                 user['username'],
                 t,
-                float(form['lat']),
-                float(form['lng']),
-                form['headline'],
+                lat,
+                lng,
+                headline,
                 form['body'],
                 False )
     g.db.execute('insert into articles (slug, username, date, lat, lng, headline, body, active) values (?,?,?,?,?,?,?,?)', values )
