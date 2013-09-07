@@ -36,6 +36,8 @@ Erlenmeyer includes these awesome pieces of software :
 * [markdown.js](https://github.com/evilstreak/markdown-js)
 * [jQuery](http://jquery.com/)
 * [Bootstrap-Markdown](http://toopay.github.io/bootstrap-markdown/)
+* [MathJax](http://mathjax.org)
+* [Prettify](https://code.google.com/p/google-code-prettify/)
 
 Erlenmeyer depends on these awesome pieces of software :
 
