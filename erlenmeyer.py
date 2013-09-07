@@ -28,6 +28,8 @@ UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 DEFAULT_AVATAR = 'shanana.png'
 THUMB_SIZE = 128
+BIBFILE = 'data/erlenmeyer.bib'
+#CSLFILE = 'data/plos.cls'
 #SERVER_NAME = '/erlenmeyer'
 
 # Erlenmeyer configuration
@@ -80,6 +82,9 @@ def md_to_html( md ) :
     doc = pandoc.Document()
     doc.add_argument( 'mathjax' )
     doc.add_argument( 'ascii' )
+    doc.add_argument( 'smart' )
+    doc.bib( BIBFILE )
+    #doc.add_argument( 'csl=' + CSLFILE )
     doc.add_argument( 'indented-code-classes=prettyprint,linenums:1' )
     doc.markdown = md
     return unicode( doc.html )
@@ -140,7 +145,6 @@ def get_articles_by_date( year, month=False, day=False, slug=False ) :
     Get articles with a given date. Year is mandatory, month, day
     and slug are optional.
     """
-    print year
     year = format( int(year), '04d' )
     
     if not month and not day :
@@ -222,7 +226,7 @@ def append_YMD( article ) :
     article['headline'] = str(article['headline'])
     article['url']      = '/' + '/'.join( ( article['year'], article['month'], article['day'], article['slug'] ) )
     article['html']     = Markup( md_to_html( article['body'] ) )
-    
+   
     return article
 
 def change_article_status( id, status ) :
@@ -311,6 +315,8 @@ def add_article( user, form, thetime=False ) :
     # handle empty string for headline
     if not form['headline'] :
         headline = u'Untitled article'
+    else :
+        headline = form['headline']   
     
     # all new articles are created with active=False
     values = (  slugify(headline),
