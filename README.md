@@ -28,6 +28,16 @@ able to keep it running herself with just a few basic tools and a
 calm, responsible attitude. One shouldn't need to be a genius or a
 professional to keep a blog running.
 
+## Usage
+
+After installing the dependencies, you should be able to launch
+Erlenmeyer in two easy steps :
+
+    $ ./init.sh
+    $ ./erlenmeyer.py
+
+Then point your browser at <code>http://localhost:5000</code>.
+
 ## Credits and dependencies
 
 Erlenmeyer includes these awesome pieces of software :
