@@ -2,6 +2,7 @@
 
 ### A blogging tool for science and research written in Python using Flask.
 
+Homepage : [Erlenmeyer](http://ryneches.github.io/Erlenmeyer/)
 
 This is Erlenmeyer, a simple blogging platform written in Python using
 Flask, because, let's face it, the world needed another blogging
