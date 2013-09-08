@@ -29,7 +29,7 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 DEFAULT_AVATAR = 'shanana.png'
 THUMB_SIZE = 128
 BIBFILE = 'data/erlenmeyer.bib'
-#CSLFILE = 'data/plos.cls'
+CSLFILE = 'data/plos.csl'
 #SERVER_NAME = '/erlenmeyer'
 
 # Erlenmeyer configuration
@@ -84,7 +84,7 @@ def md_to_html( md ) :
     doc.add_argument( 'ascii' )
     doc.add_argument( 'smart' )
     doc.bib( BIBFILE )
-    #doc.add_argument( 'csl=' + CSLFILE )
+    doc.csl( CSLFILE )
     doc.add_argument( 'indented-code-classes=prettyprint,linenums:1' )
     doc.markdown = md
     return unicode( doc.html )
