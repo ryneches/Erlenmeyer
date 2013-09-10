@@ -15,6 +15,7 @@ import sqlite3
 import re
 from unicodedata import normalize
 import pandoc
+import urllib, urllib2
 
 # Flask configuration
 DATABASE = 'erlenmeyer.db'
@@ -331,6 +332,29 @@ def add_article( user, form, thetime=False ) :
     g.db.commit()
     
     return True
+
+def add_citation( citation, doi, bibtex=None ) :
+    """
+    Add a new citation to the database.
+    """
+    if doi.startswith( 'http://' ) :
+        identifier = doi.partition( 'doi.org/' )[-1]
+    if doi.startswith( 'doi:' ) :
+        identifier = doi.partition( ':' )[-1]
+    
+    # if no bibtex is provided, get it from DOI.org
+    if not bibtex :
+        url = 'http://doi.org/' + identifier
+        req = urllib2.Request(url, headers={'Accept': 'text/bibliography; style=bibtex'})
+        response = urllib2.urlopen(req)
+        bibtex = response.read()
+    
+    values = (  name,
+                doi,
+                bibtex )
+    
+    g.db.execute( 'insert into bibs ( citation, doi, bibtex ) values (?,?,?)', values )
+    g.db.commit()
 
 def modify_article( id, body, headline ) :
     """
