@@ -1,6 +1,28 @@
 {% extends "layout.html" %}
 {% block body %}
 
+<!-- citation modal -->
+<div id="citationModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <form action='/citation' method='post' enctype="multipart/form-data">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3 id="myModalLabel">Add citation</h3>
+     </div>
+     <div class="modal-body">
+        <form class="" action="/citation" method="post" enctype="multipart/form-data">
+            <input type="text" class="" placeholder="Citation" name="citation" size="15"></input>
+            <input type="text" class="" placeholder="DOI" name="doi" size="15"></input>
+            <input type="text" class="" placeholder="BibTeX" name="bibtex" size="15"></input>
+     </div>
+     <div class="modal-footer">
+        <button class="btn" data-dismiss="modal">Close</button>
+        <a href="#" onclick='add_citation();' id="new_citation" class="btn btn-primary">Save changes</a>
+        <span id="result">Result.</span>
+     </div>
+        </form>
+</div>
+
+
 {% if article %}
 <h3>Editing article {{ article.headline }}</h3>
 <form action='/edit/{{ article.id}}' method='post' enctype='multipart/form-data'>
@@ -14,13 +36,25 @@
 <label class="checkbox">
     <input id="geolocate" name="geolocate" type="checkbox"> Geolocate
 </label>
+<a data-toggle="modal" class="btn btn-success" href="#citationModal">Add citation</a>
 <textarea id="body" name="body" data-provide="markdown" rows="24" autofocus="true"></textarea>
 <hr/>
 <input type="submit" class="btn btn-success" value="Save changes"></input>
 </form>
 
+<script type=text/javascript>
+    function add_citation() {
+        $.post( $SCRIPT_ROOT + '/citation', {
+                citation : $('input[name="citation"]').val(),
+                doi      : $('input[name="doi"]').val(),
+                bibtex   : $('input[name="bibtex"]').val()
+            }, function(data) { console.log(data); } );
+        }
+</script>
+
 <script>
-    function stuffValues(){
+
+    function stuffValues(){        
         {% if article %}
         $("#body").load("{{ article.url }}?markdown");
         {% endif %}

@@ -6,7 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-    
+    <!-- jQuery -->
+    <script type=text/javascript>
+        $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script>    
     <!-- MathJax config -->
     <script type="text/x-mathjax-config">
         MathJax.Hub.Config({

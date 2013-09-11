@@ -53,6 +53,9 @@ class UserException(Exception) :
 class ImageException(Exception) :
     pass
 
+class CitationException(Exception) :
+    pass
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -339,17 +342,22 @@ def add_citation( citation, doi, bibtex=None ) :
     """
     if doi.startswith( 'http://' ) :
         identifier = doi.partition( 'doi.org/' )[-1]
-    if doi.startswith( 'doi:' ) :
+    elif doi.startswith( 'doi:' ) :
         identifier = doi.partition( ':' )[-1]
+    else :
+        identifier = doi   
     
     # if no bibtex is provided, get it from DOI.org
     if not bibtex :
-        url = 'http://doi.org/' + identifier
-        req = urllib2.Request(url, headers={'Accept': 'text/bibliography; style=bibtex'})
-        response = urllib2.urlopen(req)
-        bibtex = response.read()
+        try :
+            url = 'http://doi.org/' + identifier
+            req = urllib2.Request(url, headers={'Accept': 'text/bibliography; style=bibtex'})
+            response = urllib2.urlopen(req)
+            bibtex = response.read()
+        except urllib2.HTTPError :
+            raise CitationException
     
-    values = (  name,
+    values = (  citation,
                 doi,
                 bibtex )
     
@@ -450,7 +458,7 @@ def publish() :
     """
     # You have to be loggined in to publish stuff
     if not 'username' in session :
-        flash( 'You must create an account to register samples!', 'alert-error' )
+        flash( 'You must create an account to publish stuff!', 'alert-error' )
         return redirect( url_for( 'index' ) )
     
     username = session['username']   
@@ -469,6 +477,30 @@ def publish() :
                                 username = username,
                                 article = False,
                                 authenticated = True )
+
+@app.route( '/citation', methods = ['POST'] )
+def citation() :
+    """
+    Manipulate citations.
+    """
+    # You have to be loggined in to mess with citations
+    if not 'username' in session :
+        flash( 'You must create an account to register citations!', 'alert-error' )
+        return redirect( url_for( 'index' ) )
+    
+    username = session['username']   
+    
+    try :
+        add_citation(   request.form['citation'], 
+                        request.form['doi'],
+                        bibtex=request.form['bibtex'] )
+
+    except CitationException :
+        flash( 'Cannot resolve DOI.', 'alert-error' )
+        return 'Oops.'
+
+    flash( 'Citation added.', 'alert-success' )
+    return 'Yay.'
 
 @app.route( '/edit/<int:id>', methods = ['POST', 'GET'] )
 def edit( id ) :
