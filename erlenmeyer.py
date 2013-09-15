@@ -347,6 +347,11 @@ def add_citation( citation, doi, bibtex=None ) :
     else :
         identifier = doi   
     
+    # check to see if we already have this one
+    citations = get_citation( doi=doi )
+    if citations :
+        raise CitationException( "Citation already in database." )
+    
     # if no bibtex is provided, get it from DOI.org
     if not bibtex :
         try :
@@ -355,14 +360,37 @@ def add_citation( citation, doi, bibtex=None ) :
             response = urllib2.urlopen(req)
             bibtex = response.read()
         except urllib2.HTTPError :
-            raise CitationException
+            raise CitationException( "DOI not found." )
     
     values = (  citation,
                 doi,
-                bibtex )
+                bibtex )   
     
     g.db.execute( 'insert into bibs ( citation, doi, bibtex ) values (?,?,?)', values )
     g.db.commit()
+    
+    return True
+
+def get_citation( doi=None, citation=None ) :
+    """
+    Returns a citation if you ask for one, or all the citations if you
+    don't.
+    """
+    if doi :
+        # should match 1 or 0 records
+        cur = g.db.execute('select * from bibs where doi = ? order by id desc', (doi,))
+    if citation :
+        # should match 1 or 0 records
+        cur = g.db.execute('select * from bibs where citation = ? order by id desc', (citation,))
+    if not doi and not citation :
+        # should match all records
+        cur = g.db.execute('selet * from bibs order by id desc')
+    
+    rows = cur.fetchall()
+    if not rows :
+        return False
+    else :
+        return rows
 
 def modify_article( id, body, headline ) :
     """
@@ -495,12 +523,12 @@ def citation() :
                         request.form['doi'],
                         bibtex=request.form['bibtex'] )
 
-    except CitationException :
+    except CitationException as e :
         flash( 'Cannot resolve DOI.', 'alert-error' )
-        return 'Oops.'
+        return str(e)
 
     flash( 'Citation added.', 'alert-success' )
-    return 'Yay.'
+    return 'success'
 
 @app.route( '/edit/<int:id>', methods = ['POST', 'GET'] )
 def edit( id ) :

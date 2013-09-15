@@ -29,7 +29,7 @@ create table tags (
 
 drop table if exists bibs;
 create table bibs (
-    if integer primary key autoincrement,
+    id integer primary key autoincrement,
     citation    string not null,
     doi         string not null,
     bibtex      string not null
