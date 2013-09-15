@@ -518,13 +518,16 @@ def citation() :
     
     username = session['username']   
     
+    # make sure we at least have a citation and a doi
+    if not request.form['citation'] or not request.form['doi'] :
+        return( 'Invalid citation request.' )
+    
     try :
         add_citation(   request.form['citation'], 
                         request.form['doi'],
                         bibtex=request.form['bibtex'] )
 
     except CitationException as e :
-        flash( 'Cannot resolve DOI.', 'alert-error' )
         return str(e)
 
     flash( 'Citation added.', 'alert-success' )
