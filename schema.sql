@@ -30,7 +30,7 @@ create table tags (
 drop table if exists bibs;
 create table bibs (
     id integer primary key autoincrement,
-    citation    string not null,
+    citation    string not null unique,
     doi         string not null,
     bibtex      string not null
 );

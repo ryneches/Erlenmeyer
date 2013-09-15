@@ -33,10 +33,11 @@
 <input id="headline" type="text" class="input-medium" placeholder="Headline" name="headline" size="25"></input>
 <input id="lat" type="text" class="input-medium" placeholder="Latitude" name="lat" size="140" value="{{ article.lat }}"></input>
 <input id="lng" type="text" class="input-medium" placeholder="Longitude" name="lng" size="140" value="{{ article.lng }}"></input>
-<label class="checkbox">
+<br/>
+<span><a data-toggle="modal" class="btn btn-success" href="#citationModal">Add citation</a></span>
+<span><label class="checkbox">
     <input id="geolocate" name="geolocate" type="checkbox"> Geolocate
-</label>
-<a data-toggle="modal" class="btn btn-success" href="#citationModal">Add citation</a>
+</label></span>
 <textarea id="body" name="body" data-provide="markdown" rows="24" autofocus="true"></textarea>
 <hr/>
 <input type="submit" class="btn btn-success" value="Save changes"></input>
@@ -50,9 +51,6 @@
                 bibtex   : $('input[name="bibtex"]').val()
             }, function(data) { document.getElementById('result').innerHTML = data; } );
         }
-</script>
-
-<script>
 
     function stuffValues(){        
         {% if article %}

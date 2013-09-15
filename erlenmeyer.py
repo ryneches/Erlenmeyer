@@ -336,7 +336,7 @@ def add_article( user, form, thetime=False ) :
     
     return True
 
-def add_citation( citation, doi, bibtex=None ) :
+def add_citation( citation_name, doi, bibtex=None ) :
     """
     Add a new citation to the database.
     """
@@ -352,22 +352,36 @@ def add_citation( citation, doi, bibtex=None ) :
     if citations :
         raise CitationException( "Citation already in database." )
     
+    # check to make sure we're not using this name already
+    citation_name = slugify(citation_name)
+    citations = get_citation( citation=citation_name )
+    if citations :
+        raise CitationException( "Citation name already used." )
+    
     # if no bibtex is provided, get it from DOI.org
     if not bibtex :
         try :
             url = 'http://doi.org/' + identifier
             req = urllib2.Request(url, headers={'Accept': 'text/bibliography; style=bibtex'})
             response = urllib2.urlopen(req)
-            bibtex = response.read()
+            bibtex = response.read().decode('utf8')
         except urllib2.HTTPError :
-            raise CitationException( "DOI not found." )
-    
-    values = (  citation,
+            raise CitationException( "DOI not found." )        
+        #replace DOI's name with our citation name
+        old_name = bibtex.split(',')[0].split('{')[1]
+        bibtex = bibtex.replace( old_name, citation_name.encode('utf-8') )
+
+    values = (  citation_name,
                 doi,
-                bibtex )   
+                bibtex )
     
     g.db.execute( 'insert into bibs ( citation, doi, bibtex ) values (?,?,?)', values )
     g.db.commit()
+    
+    # append BibTeX data to static file
+    f = open( BIBFILE, 'a' )
+    f.write( u'\n' + bibtex + u'\n' )
+    f.close()
     
     return True
 
