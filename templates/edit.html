@@ -9,6 +9,7 @@
         <h3 id="myModalLabel">Add citation</h3>
      </div>
      <div class="modal-body">
+        <div id="myCitations">My citations</div>
         <form class="" action="/citation" method="post" enctype="multipart/form-data">
             <input type="text" class="" placeholder="Citation" name="citation" size="15"></input>
             <input type="text" class="" placeholder="DOI" name="doi" size="15"></input>
@@ -21,7 +22,6 @@
      </div>
         </form>
 </div>
-
 
 {% if article %}
 <h3>Editing article {{ article.headline }}</h3>
@@ -44,6 +44,42 @@
 </form>
 
 <script type=text/javascript>
+    
+    var citation_list = [];
+    
+    /* stolen from http://jsfiddle.net/adamadam123/bTUWa/5/ */
+    function insertAtCaret(areaId,text) {
+        var txtarea = document.getElementById(areaId);
+        var scrollPos = txtarea.scrollTop;
+        var strPos = 0;
+        var br = ((txtarea.selectionStart || txtarea.selectionStart == '0') ? "ff" : (document.selection ? "ie" : false ) );
+        if (br == "ie") { 
+            txtarea.focus();
+            var range = document.selection.createRange();
+            range.moveStart ('character', -txtarea.value.length);
+            strPos = range.text.length;
+        }
+        else if (br == "ff") strPos = txtarea.selectionStart;
+        var front = (txtarea.value).substring(0,strPos);  
+        var back = (txtarea.value).substring(strPos,txtarea.value.length); 
+        txtarea.value=front+text+back;
+        strPos = strPos + text.length;
+        if (br == "ie") { 
+            txtarea.focus();
+            var range = document.selection.createRange();
+            range.moveStart ('character', -txtarea.value.length);
+            range.moveStart ('character', strPos);
+            range.moveEnd ('character', 0);
+            range.select();
+        }
+        else if (br == "ff") {
+            txtarea.selectionStart = strPos;
+            txtarea.selectionEnd = strPos;
+            txtarea.focus();
+        }
+        txtarea.scrollTop = scrollPos;
+    }
+
     function add_citation() {
         $.post( $SCRIPT_ROOT + '/citation', {
                 citation : $('input[name="citation"]').val(),
@@ -51,7 +87,10 @@
                 bibtex   : $('input[name="bibtex"]').val()
             }, function(data) { document.getElementById('result').innerHTML = data; } );
         }
-
+    function use_citation(data) {
+        insertAtCaret( 'body', '[@' + citation_list[data].citation + ']' );
+    }
+    
     function stuffValues(){        
         {% if article %}
         $("#body").load("{{ article.url }}?markdown");
@@ -66,6 +105,15 @@
                 $("#lat").val( "{{ article.lat }}" );
                 $("#lng").val( "{{ article.lng }}" );
             }
+        });
+        
+        $.getJSON( $SCRIPT_ROOT + '/citation', function(data) {
+            var items = [];
+            $.each(data, function(key, val) {
+                items.push('<li id="' + key + '"><a onclick=\'use_citation(' + key + ');\' href="#">' + val.citation + '</a></li>');
+                citation_list.push( val );
+            });
+            $('<ul/>', { 'class': 'my-new-list', html: items.join('') }).appendTo('#myCitations');
         });
     }
     window.onload = stuffValues;
