@@ -16,6 +16,7 @@ import re
 from unicodedata import normalize
 import pandoc
 import urllib, urllib2
+import json
 
 # Flask configuration
 DATABASE = 'erlenmeyer.db'
@@ -398,13 +399,14 @@ def get_citation( doi=None, citation=None ) :
         cur = g.db.execute('select * from bibs where citation = ? order by id desc', (citation,))
     if not doi and not citation :
         # should match all records
-        cur = g.db.execute('selet * from bibs order by id desc')
+        cur = g.db.execute('select * from bibs order by id desc')
     
     rows = cur.fetchall()
+    keys = ['id', 'citation', 'doi', 'bibtex']
     if not rows :
         return False
     else :
-        return rows
+        return [ dict(zip(keys, value)) for value in rows ]
 
 def modify_article( id, body, headline ) :
     """
@@ -520,7 +522,7 @@ def publish() :
                                 article = False,
                                 authenticated = True )
 
-@app.route( '/citation', methods = ['POST'] )
+@app.route( '/citation', methods = ['POST', 'GET'] )
 def citation() :
     """
     Manipulate citations.
@@ -532,20 +534,26 @@ def citation() :
     
     username = session['username']   
     
-    # make sure we at least have a citation and a doi
-    if not request.form['citation'] or not request.form['doi'] :
-        return( 'Invalid citation request.' )
+   
+    if request.method == 'POST' :
+        
+        # make sure we at least have a citation and a doi
+        if not request.form['citation'] or not request.form['doi'] :
+            return( 'Invalid citation request.' )
+        
+        try :
+            add_citation(   request.form['citation'], 
+                            request.form['doi'],
+                            bibtex=request.form['bibtex'] )
+
+        except CitationException as e :
+            return str(e)
+
+        return 'Citation added.'
     
-    try :
-        add_citation(   request.form['citation'], 
-                        request.form['doi'],
-                        bibtex=request.form['bibtex'] )
-
-    except CitationException as e :
-        return str(e)
-
-    flash( 'Citation added.', 'alert-success' )
-    return 'success'
+    if request.method == 'GET' :
+        return json.dumps(get_citation())
+        
 
 @app.route( '/edit/<int:id>', methods = ['POST', 'GET'] )
 def edit( id ) :
