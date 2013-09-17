@@ -24,19 +24,18 @@ DEBUG = True
 TRAP_BAD_REQUEST_KEY_ERRORS = True
 TRAP_HTTP_EXCEPTIONS = True
 SECRET_KEY = 'OMG so secret'
-USERNAME = 'admin'
-PASSWORD = 'default'
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 DEFAULT_AVATAR = 'shanana.png'
 THUMB_SIZE = 128
-BIBFILE = 'data/erlenmeyer.bib'
-CSLFILE = 'data/plos.csl'
 #SERVER_NAME = '/erlenmeyer'
 
 # Erlenmeyer configuration
 ALLOW_SIGNUP = True
 DISQUS_SHORTNAME = 'ryneches'
+SUPERUSER = ''
+BIBFILE = 'data/erlenmeyer.bib'
+CSLFILE = 'data/plos.csl'
 
 # globals
 ARTICLE_COLS = [ 'id', 'slug', 'username', 'date', 'headline', 'lat', 'lng', 'body', 'active' ]
