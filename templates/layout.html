@@ -18,6 +18,10 @@
             }
         });
     </script>
+    <link href="{{ url_for('atom') }}"
+      rel="alternate"
+      title="Recent Changes" 
+      type="application/atom+xml">
     <script src="{{ url_for('static', filename='js/MathJax.js', config='TeX-AMS-MML_HTMLorMML')}}"></script>
     <!-- Le styles -->
     <link href="{{ url_for('static', filename='css/bootstrap.css') }}" rel="stylesheet">
