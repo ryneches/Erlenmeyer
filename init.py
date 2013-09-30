@@ -18,7 +18,7 @@ def add_article( username, headline, date, body ) :
     """
     con = sqlite3.connect( 'erlenmeyer.db' )
     cur = con.cursor()
-    values = (  erlenmeyer.slugify( headline ),
+    values = (  erlenmeyer.slugify( unicode(headline) ),
                 username,
                 datetime.strptime( date, '%Y-%m-%d %H:%M:%S' ),
                 float('nan'),
@@ -27,7 +27,7 @@ def add_article( username, headline, date, body ) :
                 body,
                 False )
     
-    cur.execute( 'insert into articles (slug, username, date, lat, lng, headline, body, active) valules (?,?,?,?,?,?,?,?)', values )
+    cur.execute( 'insert into articles (slug, username, date, lat, lng, headline, body, active) values (?,?,?,?,?,?,?,?)', values )
     con.commit()
     con.close()
 
@@ -42,13 +42,33 @@ def get_articles() :
     con.close()
     return [ dict(zip( erlenmeyer.ARTICLE_COLS, row )) for row in rows ]
 
+def delete_article( id ) :
+    """
+    Delete an article by ID.
+    """
+    con = sqlite3.connect( 'erlenmeyer.db' )
+    cur = con.cursor()
+    cur.execute( 'delete from articles where id = ?', (id,) )
+    con.commit()
+    con.close()
+
 def articles( args ) :
+    # list all the articles
     if args.list_articles :
         articles = get_articles()
         for article in articles :
             print str(article['id']) + ' : ' + article['headline']
-
-        
+    # insert an article
+    if args.mdfile and args.username :
+        metadata,s,body = open( args.mdfile ).read().partition('\n\n')
+        m = {}
+        for item in metadata.split('\n') :
+            key,s,value = item.partition(': ')
+            m[key] = value
+        add_article( args.username, m['Title'], m['Date'], body )
+    # delete an article
+    if args.del_id :
+        delete_article( args.del_id )    
 
 def db( args ) :
     print args
@@ -64,6 +84,13 @@ parser_articles = subparsers.add_parser( 'articles',
 
 parser_articles.set_defaults( func=articles )
 
+parser_articles.add_argument(   '-delete',
+                                action      = 'store',
+                                dest        = 'del_id',
+                                type        = int,
+                                required    = False,
+                                help        = 'Delete article by ID.' )
+
 parser_articles.add_argument(   '-loadfile',
                                 action      = 'store',
                                 dest        = 'mdfile',
@@ -75,6 +102,12 @@ parser_articles.add_argument(   '-loaddir',
                                 dest        = 'mddir',
                                 required    = False,
                                 help        = 'Load a directory of Markdown articles.' )
+
+parser_articles.add_argument(   '-user',
+                                action      = 'store',
+                                dest        = 'username',
+                                required    = False,
+                                help        = 'Username to use for new articles.' )
 
 parser_articles.add_argument(   '-list',
                                 action      = 'store_true',

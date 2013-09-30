@@ -240,7 +240,10 @@ def get_user_articles( username ) :
     return articles
 
 def append_YMD( article ) :
-    d = datetime.strptime( article['date'], '%Y-%m-%d %H:%M:%S.%f')
+    try :
+        d = datetime.strptime( article['date'], '%Y-%m-%d %H:%M:%S.%f')
+    except ValueError :
+        d = datetime.strptime( article['date'], '%Y-%m-%d %H:%M:%S' )
     user = get_user( article['username'] )
     article['dtime']    = d
     article['year']     = format( d.year,   '04d' )
