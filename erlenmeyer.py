@@ -433,6 +433,7 @@ def modify_article( id, body, headline ) :
     """
     g.db.execute('update articles set body=? where id=?', (body, id,) )
     g.db.execute('update articles set headline=? where id=?', (headline, id) )
+    g.db.execute('update articles set slug=? where id=?', (slugify(headline), id) )
     g.db.commit()
     
     return True
