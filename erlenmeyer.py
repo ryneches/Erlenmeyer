@@ -153,7 +153,7 @@ def get_recent_articles( N ) :
     """
     Get the most recen N articles.
     """
-    cur = g.db.execute( 'select * from articles order by date asc limit ?', (N,) )
+    cur = g.db.execute( 'select * from articles order by date desc limit ?', (N,) )
     rows = cur.fetchall()
     articles = []
     # bag 'em up
@@ -319,37 +319,35 @@ def update_avatar( username, file ) :
     g.db.execute('update users set thumb=? where username=?', ( thumb_path, username ) )
     g.db.commit()
 
-def add_article( user, form, thetime=False ) :
+def add_article( username, headline, body, lat=False, lng=False, postdate=False ) :
     """
     Add a new article.
     """
-    if thetime :
-        t = thetime
+    if postdate :
+        t = postdate
     else :
         t = datetime.now()
     
     # handle empty string for lat and lng
-    try :
-        lat = float(form['lat'])
-        lng = float(form['lng'])
-    except ValueError :
+    if lat and lng :
+        lat = float(lat)
+        lng = float(lng)
+    else :
         lat = float('nan')
         lng = float('nan')
-   
+    
     # handle empty string for headline
-    if not form['headline'] :
+    if not headline :
         headline = u'Untitled article'
-    else :
-        headline = form['headline']   
     
     # all new articles are created with active=False
     values = (  slugify(headline),
-                user['username'],
+                username,
                 t,
                 lat,
                 lng,
                 headline,
-                form['body'],
+                body,
                 False )
     g.db.execute('insert into articles (slug, username, date, lat, lng, headline, body, active) values (?,?,?,?,?,?,?,?)', values )
     g.db.commit()
@@ -517,7 +515,14 @@ def publish() :
  
     if request.method == 'POST' :
         user = get_user( username )
-        result = add_article( user, request.form )
+        
+        # try to add the article
+        result = add_article(   user['username'],
+                                request.form['headline'],
+                                request.form['body'],
+                                lat = request.form['lat'],
+                                lng = request.form['lng'] )
+        
         if not result :
             flash( 'Something has gone wrong. Article not saved.', 'alert-error' )
         else :
