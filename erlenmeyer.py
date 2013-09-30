@@ -10,6 +10,7 @@ from md5 import md5
 from datetime import datetime, timedelta
 from contextlib import closing
 from werkzeug import secure_filename
+from werkzeug.contrib.atom import AtomFeed
 from PIL import Image
 import sqlite3
 import re
@@ -31,11 +32,12 @@ THUMB_SIZE = 128
 #SERVER_NAME = '/erlenmeyer'
 
 # Erlenmeyer configuration
-ALLOW_SIGNUP = True
-DISQUS_SHORTNAME = 'ryneches'
-SUPERUSER = ''
-BIBFILE = 'data/erlenmeyer.bib'
-CSLFILE = 'data/plos.csl'
+ALLOW_SIGNUP        = True                  # enable/disable user signups
+DISQUS_SHORTNAME    = 'ryneches'            # Disqus account name
+SUPERUSER           = ''                    # which user is the superuser?
+BIBFILE             = 'data/erlenmeyer.bib' # BibTeX database file
+CSLFILE             = 'data/plos.csl'       # citation style file
+SERVING_SIZE        = 5                     # number of articles to serve by default
 
 # globals
 ARTICLE_COLS = [ 'id', 'slug', 'username', 'date', 'headline', 'lat', 'lng', 'body', 'active' ]
@@ -144,6 +146,20 @@ def get_article_by_id( id ) :
     # bag it up
     return append_YMD( dict( zip( ARTICLE_COLS, row ) ) )
 
+def get_recent_articles( N ) :
+    """
+    Get the most recen N articles.
+    """
+    cur = g.db.execute( 'select * from articles order by date asc limit ?', (N,) )
+    rows = cur.fetchall()
+    articles = []
+    # bag 'em up
+    for row in rows :
+        article = dict( zip( ARTICLE_COLS, row ) )
+        article = append_YMD( article )
+        articles.append( article )
+    return articles
+
 def get_articles_by_date( year, month=False, day=False, slug=False ) :
     """
     Get articles with a given date. Year is mandatory, month, day
@@ -181,13 +197,13 @@ def get_articles_by_date( year, month=False, day=False, slug=False ) :
     else :
         command = 'select ' + ', '.join(ARTICLE_COLS)   \
             + ' from articles where strftime( ?, date ) = ? order by id desc'
- 
+    
         cur = g.db.execute( command, 
                         ( '\'' + date_sub + '\'',
                           '\'' + date_str + '\'' ) )
-
+    
     rows = cur.fetchall()
-  
+    
     articles = []
     # bag 'em up
     for row in rows :
@@ -429,18 +445,6 @@ def valid_login( username, password ) :
     else :
         return False
 
-@app.route( '/' )
-def index() :
-    """
-    The application root.
-    """
-    if 'username' in session :
-        return render_template( 'index.html', 
-                                username=session['username'],
-                                authenticated = True )
-    else :
-        return render_template( 'index.html' )
-
 @app.route( '/login', methods = ['GET', 'POST'] )
 def login() :
     '''
@@ -619,6 +623,34 @@ def deactivate( id ) :
     
     change_article_status( id, False )
     return redirect( url_for( 'profile', username=session['username'] ) )
+
+@app.route( '/' )
+def index() :
+    """
+    The application root.
+    """
+    # get the most recent articles 
+    articles = get_recent_articles( SERVING_SIZE )
+    
+    if 'username' in session :
+        
+        if not articles :
+            # no posts yet! serve the default page
+            return render_template( 'index.html', 
+                                    username=session['username'],
+                                    authenticated = True )
+        return render_template( 'blog.html',
+                                articles = articles,
+                                username = session['username'],
+                                authenticated = True )
+    
+    else :
+        if not articles :
+            # no posts yet! serve the default page
+            return render_template( 'index.html' )
+
+        return render_template( 'blog.html',
+                                articles = articles )
 
 @app.route( '/<int:year>', methods = ['GET'] )
 def get_year_articles( year ) :

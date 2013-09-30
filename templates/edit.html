@@ -81,12 +81,15 @@
     }
 
     function add_citation() {
-        $.post( $SCRIPT_ROOT + '/citation', {
-                citation : $('input[name="citation"]').val(),
-                doi      : $('input[name="doi"]').val(),
-                bibtex   : $('input[name="bibtex"]').val()
-            }, function(data) { document.getElementById('result').innerHTML = data; } );
-        }
+        new_citation = {    citation : $('input[name="citation"]').val(),
+                            doi      : $('input[name="doi"]').val(),
+                            bibtex   : $('input[name="bibtext"]').val() }
+        $.post( $SCRIPT_ROOT + '/citation', new_citation, function(data) { document.getElementById('result').innerHTML = data; } );
+        n = citation_list.length;
+        citation_list.push( new_citation );
+        $('#myCitations').append('<li id="' + n + '"><a onclick=\'use_citation(' + n + ');\' href="#">' + new_citation.citation + '</a></li>');
+    }
+    
     function use_citation(data) {
         insertAtCaret( 'body', '[@' + citation_list[data].citation + ']' );
     }
