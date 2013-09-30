@@ -12,6 +12,7 @@ from contextlib import closing
 from werkzeug import secure_filename
 from werkzeug.contrib.atom import AtomFeed
 from PIL import Image
+from urlparse import urljoin
 import sqlite3
 import re
 from unicodedata import normalize
@@ -83,6 +84,8 @@ def slugify(text, delim=u'-'):
             result.append(word)
     return unicode(delim.join(result))
 
+def make_external(url):
+    return urljoin(request.url_root, url)
 
 def md_to_html( md ) :
     doc = pandoc.Document()
@@ -233,6 +236,7 @@ def get_user_articles( username ) :
 def append_YMD( article ) :
     d = datetime.strptime( article['date'], '%Y-%m-%d %H:%M:%S.%f')
     user = get_user( article['username'] )
+    article['dtime']    = d
     article['year']     = format( d.year,   '04d' )
     article['month']    = format( d.month,  '02d' )
     article['day']      = format( d.day,    '02d' )
@@ -623,6 +627,28 @@ def deactivate( id ) :
     
     change_article_status( id, False )
     return redirect( url_for( 'profile', username=session['username'] ) )
+
+@app.route( '/feeds/posts' )
+def atom() :
+    """
+    Return ATOM feed of most recent articles
+    """
+    
+    feed = AtomFeed( 'Recent Articles',
+                     feed_url=request.url, 
+                     url=request.url_root )
+    
+    articles = get_recent_articles( SERVING_SIZE )
+    
+    # build the feed
+    for article in articles :
+        feed.add(   article['headline'], unicode(article['html']),
+                    content_type    = 'html',
+                    author          = article['realname'],
+                    url             = make_external(article['url']),
+                    updated         = article['dtime'] )
+    
+    return feed.get_response()
 
 @app.route( '/' )
 def index() :
