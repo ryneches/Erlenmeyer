@@ -643,7 +643,7 @@ def atom() :
     # build the feed
     for article in articles :
         feed.add(   article['headline'], unicode(article['html']),
-                    content_type    = 'html',
+                    content_type    = 'xhtml',
                     author          = article['realname'],
                     url             = make_external(article['url']),
                     updated         = article['dtime'] )
