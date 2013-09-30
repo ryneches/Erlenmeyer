@@ -151,9 +151,15 @@ def get_article_by_id( id ) :
 
 def get_recent_articles( N ) :
     """
-    Get the most recen N articles.
+    Get the most recen N articles. If N = 0, return all articles.
     """
-    cur = g.db.execute( 'select * from articles order by date desc limit ?', (N,) )
+    if N == 0 :
+        # get all the articles
+        cur = g.db.execute( 'select ' + ', '.join(ARTICLE_COLS) + ' from articles order by date desc', () )
+    else :
+        # get the most recent N articles
+        cur = g.db.execute( 'select ' + ', '.join(ARTICLE_COLS) + ' from articles order by date desc limit ?', (N,) )
+
     rows = cur.fetchall()
     articles = []
     # bag 'em up

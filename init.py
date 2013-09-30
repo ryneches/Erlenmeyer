@@ -1,13 +1,54 @@
 #!/usr/bin/env python
+import erlenmeyer
 import argparse
+import sqlite3
+import datetime
+from datetime import datetime
+
+
 try :
     import argcomplete
     argcomplete_present = True
 except ImportError :
     argcomplete_present = False
 
+def add_article( username, headline, date, body ) :
+    """
+    Add an article to the database (assumes you have a database).
+    """
+    con = sqlite3.connect( 'erlenmeyer.db' )
+    cur = con.cursor()
+    values = (  erlenmeyer.slugify( headline ),
+                username,
+                datetime.strptime( date, '%Y-%m-%d %H:%M:%S' ),
+                float('nan'),
+                float('nan'),
+                headline,
+                body,
+                False )
+    
+    cur.execute( 'insert into articles (slug, username, date, lat, lng, headline, body, active) valules (?,?,?,?,?,?,?,?)', values )
+    con.commit()
+    con.close()
+
+def get_articles() :
+    """
+    Fetch and return all articles.
+    """
+    con = sqlite3.connect( 'erlenmeyer.db' )
+    cur = con.cursor()
+    cur.execute( 'select * from articles order by date desc' )
+    rows = cur.fetchall()
+    con.close()
+    return [ dict(zip( erlenmeyer.ARTICLE_COLS, row )) for row in rows ]
+
 def articles( args ) :
-    print args
+    if args.list_articles :
+        articles = get_articles()
+        for article in articles :
+            print str(article['id']) + ' : ' + article['headline']
+
+        
 
 def db( args ) :
     print args
