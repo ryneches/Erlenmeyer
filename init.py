@@ -4,13 +4,42 @@ import argparse
 import sqlite3
 import datetime
 from datetime import datetime
-
+import os
 
 try :
     import argcomplete
     argcomplete_present = True
 except ImportError :
     argcomplete_present = False
+
+def confirm( prompt=None, resp=False ):
+    """
+    Prompts the user for a yes or no answer. Returns True for yes and
+    False for no.
+    
+    
+    from : http://code.activestate.com/recipes/541096-prompt-the-user-for-confirmation/
+    """
+    
+    if prompt is None:
+        prompt = 'Confirm'
+
+    if resp:
+        prompt = '%s [%s]|%s: ' % (prompt, 'y', 'n')
+    else:
+        prompt = '%s [%s]|%s: ' % (prompt, 'n', 'y')
+        
+    while True:
+        ans = raw_input(prompt)
+        if not ans:
+            return resp
+        if ans not in ['y', 'Y', 'n', 'N']:
+            print 'please enter y or n.'
+            continue
+        if ans == 'y' or ans == 'Y':
+            return True
+        if ans == 'n' or ans == 'N':
+            return False
 
 def add_article( username, headline, date, body ) :
     """
@@ -57,7 +86,7 @@ def articles( args ) :
     if args.list_articles :
         articles = get_articles()
         for article in articles :
-            print str(article['id']) + ' : ' + article['headline']
+            print str(article['id']) + ' : ' + str(article['headline'])
     # insert an article
     if args.mdfile and args.username :
         metadata,s,body = open( args.mdfile ).read().partition('\n\n')
@@ -66,9 +95,35 @@ def articles( args ) :
             key,s,value = item.partition(': ')
             m[key] = value
         add_article( args.username, m['Title'], m['Date'], body )
+    # insert all the articles in a directory
+    if args.mddir and args.username :
+        articles = []
+        for filename in os.listdir( args.mddir ) :
+            path = os.path.join( args.mddir, filename )
+            if os.path.isfile( path ) :
+                metadata,s,body = open( path ).read().partition('\n\n')
+                m = {}
+                for item in metadata.split('\n') :
+                    key,s,value = item.partition(': ')
+                    m[key] = value
+                print 'found article : ' + m['Title']
+                article = { 'author' : args.username, 
+                            'title'  : unicode(m['Title']), 
+                            'date'   : m['Date'],
+                            'body'   : unicode(body.decode('latin-1')),
+                            'tags'   : m['Tags']    }
+                articles.append( article )
+
+        if confirm( prompt = 'add ' + str(len(articles)) + ' articles?' ) :
+            for article in articles :
+                add_article( article['author'], 
+                             article['title'],
+                             article['date'], 
+                             article['body'] )
     # delete an article
     if args.del_id :
         delete_article( args.del_id )    
+
 
 def db( args ) :
     print args
