@@ -41,7 +41,7 @@ def confirm( prompt=None, resp=False ):
         if ans == 'n' or ans == 'N':
             return False
 
-def add_article( username, headline, date, body ) :
+def add_article( username, headline, date, tags, body ) :
     """
     Add an article to the database (assumes you have a database).
     """
@@ -54,9 +54,29 @@ def add_article( username, headline, date, body ) :
                 float('nan'),
                 headline,
                 body,
-                False )
-    
+                False )    
+
     cur.execute( 'insert into articles (slug, username, date, lat, lng, headline, body, active) values (?,?,?,?,?,?,?,?)', values )
+    
+    # commit the article and get a fresh cursor
+    con.commit()
+    cur = con.cursor()    
+    # get the article id (it'll be the one with the highest id)
+    cur.execute( 'select id from articles order by id desc' )
+    article_id = cur.fetchone()[0]
+    
+    for tag in tags :
+        # check to see if tag is already present, insert if not
+        cur.execute( 'select * from tags where tag=?', (tag,) )
+        rows = cur.fetchall()
+        if not rows :
+            cur.execute( 'insert into tags (tag) values (?)', (tag,) )
+            cur.execute( 'select * from tags where tag=?', (tag,) )
+            rows = cur.fetchall()
+        tag_id = rows[0][0]
+        # update many-to-many table
+        cur.execute( 'insert into articletags (article_id, tag_id) values (?,?)', (article_id, tag_id,) )
+    
     con.commit()
     con.close()
 
@@ -94,7 +114,8 @@ def articles( args ) :
         for item in metadata.split('\n') :
             key,s,value = item.partition(': ')
             m[key] = value
-        add_article( args.username, m['Title'], m['Date'], body )
+        tags = m['Tags'].split(', ')
+        add_article( args.username, m['Title'], m['Date'], tags, body )
     # insert all the articles in a directory
     if args.mddir and args.username :
         articles = []
@@ -111,14 +132,15 @@ def articles( args ) :
                             'title'  : unicode(m['Title']), 
                             'date'   : m['Date'],
                             'body'   : unicode(body.decode('latin-1')),
-                            'tags'   : m['Tags']    }
+                            'tags'   : m['Tags'].split(', ')    }
                 articles.append( article )
 
         if confirm( prompt = 'add ' + str(len(articles)) + ' articles?' ) :
             for article in articles :
                 add_article( article['author'], 
                              article['title'],
-                             article['date'], 
+                             article['date'],
+                             article['tags'],
                              article['body'] )
     # delete an article
     if args.del_id :

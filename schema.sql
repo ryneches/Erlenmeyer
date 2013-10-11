@@ -26,8 +26,18 @@ create table articles (
 drop table if exists tags;
 create table tags (
     id integer primary key autoincrement,
-    tag         string not null
+    tag         string not null unique
 );
+
+drop table if exists articletags;
+create table articletags (
+    tag_id              integer,
+    article_id          integer,
+    foreign key(tag_id) references tags(id) on delete cascade,
+    foreign key(article_id) references articles(id) on delete cascade
+);
+create index tags_to_articles on articletags(tag_id);
+create index articles_to_tags on articletags(article_id);
 
 drop table if exists bibs;
 create table bibs (
