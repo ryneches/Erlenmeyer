@@ -3,6 +3,7 @@ import erlenmeyer
 import argparse
 import sqlite3
 import datetime
+import pandoc
 from datetime import datetime
 import os
 
@@ -52,11 +53,12 @@ def add_article( username, headline, date, tags, body ) :
                 datetime.strptime( date, '%Y-%m-%d %H:%M:%S' ),
                 float('nan'),
                 float('nan'),
-                headline,
+                unicode(headline),
                 body,
-                False )    
+                erlenmeyer.md_to_html(body),
+                False )
 
-    cur.execute( 'insert into articles (slug, username, date, lat, lng, headline, body, active) values (?,?,?,?,?,?,?,?)', values )
+    cur.execute( 'insert into articles (slug, username, date, lat, lng, headline, html, body, active) values (?,?,?,?,?,?,?,?,?)', values )
     
     # commit the article and get a fresh cursor
     con.commit()
@@ -107,6 +109,7 @@ def articles( args ) :
         articles = get_articles()
         for article in articles :
             print str(article['id']) + ' : ' + str(article['headline'])
+        return True
     # insert an article
     if args.mdfile and args.username :
         metadata,s,body = open( args.mdfile ).read().partition('\n\n')
@@ -116,6 +119,7 @@ def articles( args ) :
             m[key] = value
         tags = m['Tags'].split(', ')
         add_article( args.username, m['Title'], m['Date'], tags, body )
+        return True
     # insert all the articles in a directory
     if args.mddir and args.username :
         articles = []
@@ -137,11 +141,13 @@ def articles( args ) :
 
         if confirm( prompt = 'add ' + str(len(articles)) + ' articles?' ) :
             for article in articles :
+                print 'adding article : ' + article['title']
                 add_article( article['author'], 
                              article['title'],
                              article['date'],
                              article['tags'],
                              article['body'] )
+        return True
     # delete an article
     if args.del_id :
         delete_article( args.del_id )    
