@@ -18,7 +18,9 @@ create table articles (
     lat                 real,
     lng                 real,
     body                text,
-    active              boolean
+    html                text,
+    active              boolean,
+    foreign key(username) references users(username)
 );
 
 drop table if exists tags;
