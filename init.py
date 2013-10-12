@@ -58,7 +58,7 @@ def add_article( username, headline, date, tags, body ) :
                 erlenmeyer.md_to_html(body),
                 False )
 
-    cur.execute( 'insert into articles (slug, username, date, lat, lng, headline, html, body, active) values (?,?,?,?,?,?,?,?,?)', values )
+    cur.execute( 'insert into articles (slug, username, date, lat, lng, headline, body, html, active) values (?,?,?,?,?,?,?,?,?)', values )
     
     # commit the article and get a fresh cursor
     con.commit()
@@ -142,11 +142,14 @@ def articles( args ) :
         if confirm( prompt = 'add ' + str(len(articles)) + ' articles?' ) :
             for article in articles :
                 print 'adding article : ' + article['title']
-                add_article( article['author'], 
-                             article['title'],
-                             article['date'],
-                             article['tags'],
-                             article['body'] )
+                try :
+                    add_article( article['author'], 
+                                 article['title'],
+                                 article['date'],
+                                 article['tags'],
+                                 article['body'] )
+                except :
+                    print article
         return True
     # delete an article
     if args.del_id :

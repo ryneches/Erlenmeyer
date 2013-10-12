@@ -41,7 +41,7 @@ CSLFILE             = 'data/plos.csl'       # citation style file
 SERVING_SIZE        = 5                     # number of articles to serve by default
 
 # globals
-ARTICLE_COLS = [ 'id', 'slug', 'username', 'date', 'headline', 'lat', 'lng', 'body', 'active' ]
+ARTICLE_COLS = [ 'id', 'slug', 'username', 'date', 'headline', 'lat', 'lng', 'body', 'html', 'active' ]
 USER_COLS    = [ 'id', 'username', 'password', 'realname', 'avatar', 'thumb' ]
 
 app = Flask(__name__)
@@ -258,7 +258,7 @@ def append_YMD( article ) :
     article['slug']     = str(article['slug'])
     article['headline'] = str(article['headline'])
     article['url']      = '/' + '/'.join( ( article['year'], article['month'], article['day'], article['slug'] ) )
-    article['html']     = Markup( md_to_html( article['body'] ) )
+    article['html']     = Markup( article['html'] )
    
     return article
 
