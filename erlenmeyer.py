@@ -349,6 +349,9 @@ def add_article( username, headline, body, lat=False, lng=False, postdate=False 
     if not headline :
         headline = u'Untitled article'
     
+    # generate the HTML
+    html = Markup( md_to_html( body ) )
+    
     # all new articles are created with active=False
     values = (  slugify(headline),
                 username,
@@ -357,8 +360,9 @@ def add_article( username, headline, body, lat=False, lng=False, postdate=False 
                 lng,
                 headline,
                 body,
+                html,
                 False )
-    g.db.execute('insert into articles (slug, username, date, lat, lng, headline, body, active) values (?,?,?,?,?,?,?,?)', values )
+    g.db.execute('insert into articles (slug, username, date, lat, lng, headline, body, html, active) values (?,?,?,?,?,?,?,?)', values )
     g.db.commit()
     
     return True
@@ -438,7 +442,9 @@ def modify_article( id, body, headline ) :
     """
     Replace an article's headline and body.
     """
+    html = Markup( md_to_html( body ) )
     g.db.execute('update articles set body=? where id=?', (body, id,) )
+    g.db.execute('udpate articles set html=? where id=?', (html, id,) )
     g.db.execute('update articles set headline=? where id=?', (headline, id) )
     g.db.execute('update articles set slug=? where id=?', (slugify(headline), id) )
     g.db.commit()
