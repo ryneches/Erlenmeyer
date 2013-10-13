@@ -362,7 +362,7 @@ def add_article( username, headline, body, lat=False, lng=False, postdate=False 
                 body,
                 html,
                 False )
-    g.db.execute('insert into articles (slug, username, date, lat, lng, headline, body, html, active) values (?,?,?,?,?,?,?,?)', values )
+    g.db.execute('insert into articles (slug, username, date, lat, lng, headline, body, html, active) values (?,?,?,?,?,?,?,?,?)', values )
     g.db.commit()
     
     return True
@@ -395,7 +395,7 @@ def add_citation( citation_name, doi, bibtex=None ) :
             url = 'http://doi.org/' + identifier
             req = urllib2.Request(url, headers={'Accept': 'text/bibliography; style=bibtex'})
             response = urllib2.urlopen(req)
-            bibtex = response.read().decode('utf8')
+            bibtex = unicode( response.read().decode('utf8') )
         except urllib2.HTTPError :
             raise CitationException( "DOI not found." )        
         #replace DOI's name with our citation name
@@ -405,7 +405,7 @@ def add_citation( citation_name, doi, bibtex=None ) :
     values = (  citation_name,
                 doi,
                 bibtex )
-    
+   
     g.db.execute( 'insert into bibs ( citation, doi, bibtex ) values (?,?,?)', values )
     g.db.commit()
     
@@ -564,18 +564,22 @@ def citation() :
     
    
     if request.method == 'POST' :
-        
+       
         # make sure we at least have a citation and a doi
         if not request.form['citation'] or not request.form['doi'] :
             return( 'Invalid citation request.' )
         
-        try :
+        #try :
+        if request.form.has_key('bibtex') :
             add_citation(   request.form['citation'], 
                             request.form['doi'],
                             bibtex=request.form['bibtex'] )
+        else :
+            add_citation(   request.form['citation'],
+                            request.form['doi'] )
 
-        except CitationException as e :
-            return str(e)
+        #except  as e :
+        #    print str(e)
 
         return 'Citation added.'
     
