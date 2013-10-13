@@ -444,7 +444,7 @@ def modify_article( id, body, headline ) :
     """
     html = Markup( md_to_html( body ) )
     g.db.execute('update articles set body=? where id=?', (body, id,) )
-    g.db.execute('udpate articles set html=? where id=?', (html, id,) )
+    g.db.execute('update articles set html=? where id=?', (html, id,) )
     g.db.execute('update articles set headline=? where id=?', (headline, id) )
     g.db.execute('update articles set slug=? where id=?', (slugify(headline), id) )
     g.db.commit()
