@@ -33,11 +33,12 @@
 </a>
 
 {% if authenticated %}
-<a data-toggle="modal" class="btn-large btn-success" href='/publish'>Write a new article!</a>
+<a data-toggle="modal" class="btn btn-success btn-lg" href='/publish'>Write a new article!</a>
 {% endif %}
 
 <p/>
-<table class="table table-bordered table-striped table-hover"><body>
+<div class="table-responsive">
+<table class="table table-striped table-hover"><body>
 <thead>
 <strong>
 <tr style="font-weight:bold"><td>Title</td><td>Date</td><td>Status</td></tr>
@@ -47,7 +48,7 @@
 {% for r in articles %}
     <tr>
     <td>
-    <a class="label" href="/edit/{{ r.id }}">edit</a>
+    <a class="label label-default" href="/edit/{{ r.id }}">edit</a>
     <a href="/{{ r.year}}/{{ r.month}}/{{ r.day}}/{{ r.slug }}">{{ r.headline }}</a>
     </td>
     <td>{{ r.date }}</td>
@@ -55,5 +56,6 @@
     </tr>
 {% endfor %}
 </tbody></table>
+</table>
 
 {% endblock %}

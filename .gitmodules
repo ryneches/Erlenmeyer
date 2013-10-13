@@ -7,3 +7,9 @@
 [submodule "libs/jquery"]
 	path = libs/jquery
 	url = https://github.com/jquery/jquery.git
+[submodule "libs/bootstrap-markdown"]
+	path = libs/bootstrap-markdown
+	url = https://github.com/toopay/bootstrap-markdown.git
+[submodule "libs/bootstrap3"]
+	path = libs/bootstrap3
+	url = https://github.com/twbs/bootstrap.git
