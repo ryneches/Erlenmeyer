@@ -1,0 +1,3 @@
+[submodule "libs/pyandoc"]
+	path = libs/pyandoc
+	url = https://github.com/kennethreitz/pyandoc.git
