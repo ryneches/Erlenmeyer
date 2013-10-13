@@ -1,3 +1,6 @@
 [submodule "libs/pyandoc"]
 	path = libs/pyandoc
 	url = https://github.com/kennethreitz/pyandoc.git
+[submodule "libs/markdown-js"]
+	path = libs/markdown-js
+	url = https://github.com/evilstreak/markdown-js.git
