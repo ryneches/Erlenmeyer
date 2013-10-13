@@ -12,21 +12,27 @@
 {% endif %}
 
 <!-- avatar with avatar change modal -->
-<div id="avatarModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-<form action='/newavatar' method='post' enctype="multipart/form-data">
-    <div class="modal-header">
+<div id="avatarModal" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h3 id="myModalLabel">Upload a new avatar picture!</h3>
-    </div>
-    <div class="modal-body">
-       <input type="file" name="avatar" />
-    </div>
-    <div class="modal-footer">
-        <button class="btn" data-dismiss="modal">Close</button>
-        <input type="submit" class="btn btn-primary" value="Save changes"></input>
-    </div>
-</form>
-</div>
+        <h4 class="modal-title">Upload a new avatar picture!</h4>
+      </div>
+      <form action='/newavatar' method='post' enctype="multipart/form-data">
+        <div class="modal-body">
+          <p>
+            <input type="file" name="avatar" />
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 <a data-toggle="modal" href="#avatarModal">
 <img class="img-circle" src="{{ url_for('static', filename=user.thumb)}}">
