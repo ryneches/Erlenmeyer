@@ -675,7 +675,7 @@
         data: [{
           name: 'cmdBold',
           title: 'Bold',
-          icon: 'icon icon-bold',
+          icon: 'icon-bold',
           callback: function(e){
             // Give/remove ** surround the selection
             var chunk, cursor, selected = e.getSelection(), content = e.getContent()
