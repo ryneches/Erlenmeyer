@@ -1,46 +1,81 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<!-- citation modal -->
-<div id="citationModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <form action='/citation' method='post' enctype="multipart/form-data">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h3 id="myModalLabel">Add citation</h3>
-     </div>
-     <div class="modal-body">
-        <div id="myCitations">My citations</div>
-        <form class="" action="/citation" method="post" enctype="multipart/form-data">
-            <input type="text" class="" placeholder="Citation" name="citation" size="15"></input>
-            <input type="text" class="" placeholder="DOI" name="doi" size="15"></input>
-            <input type="text" class="" placeholder="BibTeX" name="bibtex" size="15"></input>
-     </div>
-     <div class="modal-footer">
-        <span id="result"></span>
-        <button class="btn" data-dismiss="modal">Close</button>
-        <a href="#" onclick='add_citation();' id="new_citation" class="btn btn-primary">Save changes</a>
-     </div>
-        </form>
-</div>
+    <!-- citation modal -->
+    <div id="citationModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Add citation</h4>
+                </div>
+                <form class="" action="/citation" method="post" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div id="mycitations">My citations</div>
+                        <div class="input-group input-group-lg">
+                           <span class="input-group-addon"><span class="glyphicon glyphicon-paperclip"></span></span>
+                           <input type="text" class="form-control input-lg" placeholder="Citation name" name="citation"></input>
+                        </div><br/>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-link"></span></span>
+                            <input type="text" class="form-control input-lg" placeholder="DOI or doi.org URL" name="doi"></input>
+                        </div><br/>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-pencil"></span></span>
+                            <input type="text" class="form-control input-lg" placeholder="BibTeX (optional)" name="bibtex">
+                        </div><br/>
+                    </div>
+                    <div class="modal-footer">
+                        <span id="result"></span>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <a href="#" onclick='add_citation();' id="new_citation" class="btn btn-primary">Save changes</a>
+                    </div>
+                </form>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
 
 {% if article %}
+
 <h3>Editing article {{ article.headline }}</h3>
-<form action='/edit/{{ article.id}}' method='post' enctype='multipart/form-data'>
+<form action='/edit/{{ article.id }}' method='post' enctype='multipart/form-data'>
 {% else %}
 <h3>Editing new article</h3>
 <form action="/publish" method='post' enctype='multipart/form-data'>
 {% endif %}
-<input id="headline" type="text" class="input-medium" placeholder="Headline" name="headline" size="25"></input>
-<input id="lat" type="text" class="input-medium" placeholder="Latitude" name="lat" size="140" value="{{ article.lat }}"></input>
-<input id="lng" type="text" class="input-medium" placeholder="Longitude" name="lng" size="140" value="{{ article.lng }}"></input>
+
+<div class="input-group input-group-lg">
+    <span class="input-group-addon"><span class="glyphicon glyphicon-bullhorn"></span></span>
+    <input id="headline" type="text" class="form-control input-lg" placeholder="Headline" name="headline"></input>
+</div>
 <br/>
-<span><a data-toggle="modal" class="btn btn-success" href="#citationModal">Add citation</a></span>
-<span><label class="checkbox">
-    <input id="geolocate" name="geolocate" type="checkbox"> Geolocate
-</label></span>
 <textarea id="body" name="body" data-provide="markdown" rows="24" autofocus="true"></textarea>
-<hr/>
-<input type="submit" class="btn btn-success" value="Save changes"></input>
+<br/>
+<div class="row">
+    <div class="col-lg-6">
+        <input type="submit" class="btn btn-success" value="Save changes"></input>
+        <span><a data-toggle="modal" class="btn btn-primary" href="#citationModal">Add citation</a></span>
+    </div>
+    <div class="col-lg-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Geolocation</h3>
+            </div>
+            <div class="panel-body">
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <input type="checkbox" id="geolocate" name="geolocate">
+                    </span>
+                    <input id="lat" type="text" class="form-control" placeholder="Latitude" name="lat" value="{{ article.lat }}"></input>
+                    <input id="lng" type="text" class="form-control" placeholder="Longitude" name="lng" value="{{ article.lng }}"></input>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 </form>
 
 <script type=text/javascript>
