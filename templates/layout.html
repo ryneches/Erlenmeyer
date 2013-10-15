@@ -241,7 +241,7 @@
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
-                <div class="{{ category }} alert fade in">
+                <div class="alert {{ category }} alert-dismissable fade in">
                     <button type="button" class="close" data-dismiss="alert">&times;</button>
                     {% if category == "alert-error" %}
                     <h3>Whoops!</h3>
