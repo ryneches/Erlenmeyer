@@ -11,7 +11,14 @@
                 </div>
                 <form class="" action="/citation" method="post" enctype="multipart/form-data">
                     <div class="modal-body">
-                        <div id="myCitations">My citations</div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">My citations</h3>
+                            </div>
+                            <div id="myCitations" class="panel-body">
+                                <!-- citations will get stuffed in here -->
+                            </div>
+                        </div> 
                         <div class="input-group input-group-lg">
                            <span class="input-group-addon"><span class="glyphicon glyphicon-paperclip"></span></span>
                            <input type="text" class="form-control input-lg" placeholder="Citation name" name="citation"></input>
@@ -114,7 +121,7 @@
         }
         txtarea.scrollTop = scrollPos;
     }
-
+    
     function add_citation() {
         new_citation = {    citation : $('input[name="citation"]').val(),
                             doi      : $('input[name="doi"]').val(),
@@ -122,7 +129,7 @@
         $.post( $SCRIPT_ROOT + '/citation', new_citation, function(data) { document.getElementById('result').innerHTML = data; } );
         n = citation_list.length;
         citation_list.push( new_citation );
-        $('#myCitations').append('<li id="' + n + '"><a onclick=\'use_citation(' + n + ');\' href="#">' + new_citation.citation + '</a></li>');
+        $('#myCitations').append('<a onclick=\'use_citation(' + n + ');\' href="#"><span class="label label-primary" id="' + n + '">' + new_citation.citation + '</span></a> ');
     }
     
     function use_citation(data) {
@@ -148,10 +155,10 @@
         $.getJSON( $SCRIPT_ROOT + '/citation', function(data) {
             var items = [];
             $.each(data, function(key, val) {
-                items.push('<li id="' + key + '"><a onclick=\'use_citation(' + key + ');\' href="#">' + val.citation + '</a></li>');
+                items.push('<a onclick=\'use_citation(' + key + ');\' href="#"><span class="label label-primary" id="' + key + '">' + val.citation + '</span></a> ');
                 citation_list.push( val );
             });
-            $('<ul/>', { 'class': 'my-new-list', html: items.join('') }).appendTo('#myCitations');
+            $('<div/>', { 'class': 'my-new-list', html: items.join('') }).appendTo('#myCitations');
         });
     }
     window.onload = stuffValues;
