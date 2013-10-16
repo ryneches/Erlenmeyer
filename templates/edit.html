@@ -126,10 +126,21 @@
         new_citation = {    citation : $('input[name="citation"]').val(),
                             doi      : $('input[name="doi"]').val(),
                             bibtex   : $('input[name="bibtext"]').val() }
-        $.post( $SCRIPT_ROOT + '/citation', new_citation, function(data) { document.getElementById('result').innerHTML = data; } );
-        n = citation_list.length;
-        citation_list.push( new_citation );
-        $('#myCitations').append('<a onclick=\'use_citation(' + n + ');\' href="#"><span class="label label-primary" id="' + n + '">' + new_citation.citation + '</span></a> ');
+        result = 'Nothing to see here yet...';
+        document.getElementById( 'result' ).innerHTML = "Adding citation...";
+        $.post( $SCRIPT_ROOT + '/citation', new_citation, function(data) { 
+            result = data;
+        } );
+        if( result != 'Citation already in database.' 
+                && result != 'DOI not found.'
+                && result != 'Nothing to see here yet...' ) {
+            n = citation_list.length;
+            new_citation['citation'] = result['citation_name'];
+            citation_list.push( result );
+            console.log(citation_list);
+            $('#myCitations').append('<a onclick=\'use_citation(' + n + ');\' href="#"><span class="label label-primary" id="' + n + '">' + new_citaiton['citation'] + '</span></a> ');
+        }
+        document.getElementById('result').innerHTML = new_citation['citation'];
     }
     
     function use_citation(data) {

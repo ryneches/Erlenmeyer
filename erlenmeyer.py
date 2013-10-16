@@ -410,11 +410,16 @@ def add_citation( citation_name, doi, bibtex=None ) :
     g.db.commit()
     
     # append BibTeX data to static file
-    f = open( BIBFILE, 'a' )
-    f.write( u'\n' + bibtex + u'\n' )
-    f.close()
+    try :
+        f = open( BIBFILE, 'a' )
+        f.write( u'\n' + bibtex + u'\n' )
+        f.close()
+    except :
+        raise CitationException( "Can't add citation to " + BIBFILE )
     
-    return True
+    return {    'citation'  : citation_name, 
+                'doi'       : doi, 
+                'bibtex'    : bibtex }
 
 def get_citation( doi=None, citation=None ) :
     """
@@ -562,30 +567,27 @@ def citation() :
     
     username = session['username']   
     
-   
     if request.method == 'POST' :
        
         # make sure we at least have a citation and a doi
         if not request.form['citation'] or not request.form['doi'] :
             return( 'Invalid citation request.' )
         
-        #try :
-        if request.form.has_key('bibtex') :
-            add_citation(   request.form['citation'], 
-                            request.form['doi'],
-                            bibtex=request.form['bibtex'] )
-        else :
-            add_citation(   request.form['citation'],
-                            request.form['doi'] )
+        try :
+            if request.form.has_key('bibtex') :
+                c = add_citation(   request.form['citation'], 
+                                    request.form['doi'],
+                                    bibtex=request.form['bibtex'] )
+            else :
+                c = add_citation(   request.form['citation'],
+                                    request.form['doi'] )
+        except CitationException, e :
+            return str(e)
 
-        #except  as e :
-        #    print str(e)
-
-        return 'Citation added.'
-    
+        return json.dumps(c)
+        
     if request.method == 'GET' :
         return json.dumps(get_citation())
-        
 
 @app.route( '/edit/<int:id>', methods = ['POST', 'GET'] )
 def edit( id ) :
