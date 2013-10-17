@@ -33,7 +33,7 @@
                         </div><br/>
                     </div>
                     <div class="modal-footer">
-                        <span id="result"></span>
+                        <span id="user_result"></span>
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                         <a href="#" onclick='add_citation();' id="new_citation" class="btn btn-primary">Save changes</a>
                     </div>
@@ -125,33 +125,28 @@
     function add_citation() {
         new_citation = {    citation : $('input[name="citation"]').val(),
                             doi      : $('input[name="doi"]').val(),
-                            bibtex   : $('input[name="bibtext"]').val() }
-        result = 'Nothing to see here yet...';
-        document.getElementById( 'result' ).innerHTML = "Adding citation...";
-        $.post( $SCRIPT_ROOT + '/citation', new_citation, function(data) { 
-            result = data;
-            console.log( data );
-        } );
-        if( result == 'DOI not found.' ){ 
-            document.getElementById('result').innerHTML = 'DOI not found.';
-            return 1;
-        }
-        if( result == 'Citation already in database.' ){
-            document.getElementById('result').innerHTML = 'Citation already in database.';
-            return 1;
-        }
-        if( result == 'Nothing to see here yet...' ){
-            document.getElementById('result').innerHTML = 'Something has mysteriously gone wrong.';
-            return 1;
-        }
-        n = citation_list.length;
-        new_citation.citation = result.citation_name;
-        citation_list.push( new_citation );
-        console.log(citation_list);
-        new_link = '<a onclick=\'use_citation(' + n + ');\' href="#"><span class="label label-primary" id="' + n + '">' + new_citaiton.citation + '</span></a> '
-        console.log(new_link);
-        $('#myCitations').append( new_link );
-        document.getElementById('result').innerHTML = "Added " + new_citation.citation;
+                            bibtex   : $('input[name="bibtext"]').val() };
+        
+        $.ajax({ url: $SCRIPT_ROOT + '/citation',
+            type : 'POST',
+            data : new_citation,
+            success: function(data){
+                citation_list.push( data ); 
+                $('#user_result').innerHTML = 'Added ' + data.citation;
+                n = citation_list.length;
+                new_link = '<a onclick=\'use_citation(' + n + ');\' href="#"><span class="label label-primary" id="'
+                            + n + '">' + new_citation.citation + '</span></a> ';
+                $('#myCitations').append( new_link );
+                console.log( data );
+            },
+            cache: false,
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(textStatus, errorThrown);
+                if( textStatus == 404 ) { $('#user_result').innerHTML = 'DOI not found.'; }
+                if( textStatus == 406 ) { $('#user_result').innerHTML = 'DOI already in database.'; }
+            },
+            dataType: "text",
+            timeout: 30000 });
     }
     
     function use_citation(data) {
