@@ -130,17 +130,28 @@
         document.getElementById( 'result' ).innerHTML = "Adding citation...";
         $.post( $SCRIPT_ROOT + '/citation', new_citation, function(data) { 
             result = data;
+            console.log( data );
         } );
-        if( result != 'Citation already in database.' 
-                && result != 'DOI not found.'
-                && result != 'Nothing to see here yet...' ) {
-            n = citation_list.length;
-            new_citation['citation'] = result['citation_name'];
-            citation_list.push( result );
-            console.log(citation_list);
-            $('#myCitations').append('<a onclick=\'use_citation(' + n + ');\' href="#"><span class="label label-primary" id="' + n + '">' + new_citaiton['citation'] + '</span></a> ');
+        if( result == 'DOI not found.' ){ 
+            document.getElementById('result').innerHTML = 'DOI not found.';
+            return 1;
         }
-        document.getElementById('result').innerHTML = new_citation['citation'];
+        if( result == 'Citation already in database.' ){
+            document.getElementById('result').innerHTML = 'Citation already in database.';
+            return 1;
+        }
+        if( result == 'Nothing to see here yet...' ){
+            document.getElementById('result').innerHTML = 'Something has mysteriously gone wrong.';
+            return 1;
+        }
+        n = citation_list.length;
+        new_citation.citation = result.citation_name;
+        citation_list.push( new_citation );
+        console.log(citation_list);
+        new_link = '<a onclick=\'use_citation(' + n + ');\' href="#"><span class="label label-primary" id="' + n + '">' + new_citaiton.citation + '</span></a> '
+        console.log(new_link);
+        $('#myCitations').append( new_link );
+        document.getElementById('result').innerHTML = "Added " + new_citation.citation;
     }
     
     function use_citation(data) {
