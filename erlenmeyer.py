@@ -572,7 +572,7 @@ def citation() :
         # make sure we at least have a citation and a doi
         if not request.form['citation'] or not request.form['doi'] :
             # HTTP response : Not acceptable
-            return( 'Invalid citation request.', 406 )        
+            return( 'Invalid citation request.', 400 )        
         try :
             if request.form.has_key('bibtex') :
                 c = add_citation(   request.form['citation'], 
@@ -582,9 +582,18 @@ def citation() :
                 c = add_citation(   request.form['citation'],
                                     request.form['doi'] )
         except CitationException, e :
-            # HTTP response : Not found
-            return( str(e), 404 )
-        
+            if str(e) == "Citation already in database." :
+                # HTTP response : Not allowed
+                return( str(e), 405 )
+            if str(e) == "Citation name already used." :
+                # HTTP response : Not acceptable
+                return( str(e), 406 )
+            elif str(e) == "DOI not found." :
+                # HTTP response : Not found
+                return( str(e), 404 )
+            else :
+                return( "Urp.", 409 ) 
+
         # HTTP response : OK
         return( json.dumps(c), 200 )
     

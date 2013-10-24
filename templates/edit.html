@@ -33,7 +33,7 @@
                         </div><br/>
                     </div>
                     <div class="modal-footer">
-                        <span id="user_result"></span>
+                        <span id="result"></span>
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                         <a href="#" onclick='add_citation();' id="new_citation" class="btn btn-primary">Save changes</a>
                     </div>
@@ -86,7 +86,8 @@
 </form>
 
 <script type=text/javascript>
-    
+    var test = [];    
+
     var citation_list = [];
     
     /* stolen from http://jsfiddle.net/adamadam123/bTUWa/5/ */
@@ -127,23 +128,28 @@
                             doi      : $('input[name="doi"]').val(),
                             bibtex   : $('input[name="bibtext"]').val() };
         
+        resultarea = document.getElementById('result')
+        
+        resultarea.innerHTML = 'Looking up DOI...';
+        
         $.ajax({ url: $SCRIPT_ROOT + '/citation',
             type : 'POST',
             data : new_citation,
             success: function(data){
+                data = jQuery.parseJSON( data );
                 citation_list.push( data ); 
-                $('#user_result').innerHTML = 'Added ' + data.citation;
+                resultarea.innerHTML = 'Added ' + data.citation;
                 n = citation_list.length;
                 new_link = '<a onclick=\'use_citation(' + n + ');\' href="#"><span class="label label-primary" id="'
                             + n + '">' + new_citation.citation + '</span></a> ';
                 $('#myCitations').append( new_link );
-                console.log( data );
             },
             cache: false,
             error: function(jqXHR, textStatus, errorThrown) {
-                console.log(textStatus, errorThrown);
-                if( textStatus == 404 ) { $('#user_result').innerHTML = 'DOI not found.'; }
-                if( textStatus == 406 ) { $('#user_result').innerHTML = 'DOI already in database.'; }
+                if( jqXHR.status == 400 ) { resultarea.innerHTML = 'Missing data!'; }
+                if( jqXHR.status == 404 ) { resultarea.innerHTML = 'DOI not found.'; }
+                if( jqXHR.status == 405 ) { resultarea.innerHTML = 'DOI already in database.'; }
+                if( jqXHR.status == 406 ) { resultarea.innerHTML = 'Citation name already used.'; }
             },
             dataType: "text",
             timeout: 30000 });
