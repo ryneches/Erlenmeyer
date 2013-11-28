@@ -155,7 +155,6 @@ def get_recent_articles( N, published=True ) :
     """
     
     if published :
-
         cur = g.db.execute( 'select ' + ', '.join(ARTICLE_COLS) + ' from articles where active = 1 order by date desc', () )
     else :
         cur = g.db.execute( 'select ' + ', '.join(ARTICLE_COLS) + ' from articles order by date desc', () )
