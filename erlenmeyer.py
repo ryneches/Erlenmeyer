@@ -149,24 +149,34 @@ def get_article_by_id( id ) :
     # bag it up
     return append_YMD( dict( zip( ARTICLE_COLS, row ) ) )
 
-def get_recent_articles( N ) :
+def get_recent_articles( N, published=True ) :
     """
     Get the most recen N articles. If N = 0, return all articles.
     """
-    if N == 0 :
-        # get all the articles
-        cur = g.db.execute( 'select ' + ', '.join(ARTICLE_COLS) + ' from articles order by date desc', () )
-    else :
-        # get the most recent N articles
-        cur = g.db.execute( 'select ' + ', '.join(ARTICLE_COLS) + ' from articles order by date desc limit ?', (N,) )
+    
+    if published :
 
-    rows = cur.fetchall()
+        cur = g.db.execute( 'select ' + ', '.join(ARTICLE_COLS) + ' from articles where active = 1 order by date desc', () )
+    else :
+        cur = g.db.execute( 'select ' + ', '.join(ARTICLE_COLS) + ' from articles order by date desc', () )
+
     articles = []
-    # bag 'em up
-    for row in rows :
-        article = dict( zip( ARTICLE_COLS, row ) )
+    
+    # return all the articles, active or not
+    if N == 0 :
+        rows = cur.fetchall()
         article = append_YMD( article )
         articles.append( article )
+    
+    # return either the first N articles 
+    # or the first N active articles
+    if N > 0 :
+        while len(articles) < N :
+            row = cur.fetchone()
+            article = dict( zip( ARTICLE_COLS, row ) )
+            article = append_YMD( article )
+            articles.append( article )
+   
     return articles
 
 def get_articles_by_date( year, month=False, day=False, slug=False ) :

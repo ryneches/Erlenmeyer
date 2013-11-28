@@ -137,8 +137,8 @@
             data : new_citation,
             success: function(data){
                 data = jQuery.parseJSON( data );
-                citation_list.push( data ); 
                 resultarea.innerHTML = 'Added ' + data.citation;
+                citation_list.push( data ); 
                 n = citation_list.length;
                 new_link = '<a onclick=\'use_citation(' + n + ');\' href="#"><span class="label label-primary" id="'
                             + n + '">' + new_citation.citation + '</span></a> ';
