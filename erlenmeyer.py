@@ -172,6 +172,7 @@ def get_recent_articles( N, published=True ) :
     if N > 0 :
         while len(articles) < N :
             row = cur.fetchone()
+            if not row : return articles # bust out of here
             article = dict( zip( ARTICLE_COLS, row ) )
             article = append_YMD( article )
             articles.append( article )

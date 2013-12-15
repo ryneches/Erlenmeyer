@@ -13,6 +13,8 @@ try :
 except ImportError :
     argcomplete_present = False
 
+mdfile_keys = [ 'Title', 'Date', 'Slug', 'Author', 'Tags', 'Summary' ]
+
 def confirm( prompt=None, resp=False ):
     """
     Prompts the user for a yes or no answer. Returns True for yes and
@@ -42,7 +44,7 @@ def confirm( prompt=None, resp=False ):
         if ans == 'n' or ans == 'N':
             return False
 
-def add_article( username, headline, date, tags, body ) :
+def add_article( username, headline, date, tags, body, active=False ) :
     """
     Add an article to the database (assumes you have a database).
     """
@@ -56,7 +58,7 @@ def add_article( username, headline, date, tags, body ) :
                 unicode(headline),
                 body,
                 erlenmeyer.md_to_html(body),
-                False )
+                active )
 
     cur.execute( 'insert into articles (slug, username, date, lat, lng, headline, body, html, active) values (?,?,?,?,?,?,?,?,?)', values )
     
@@ -103,6 +105,21 @@ def delete_article( id ) :
     con.commit()
     con.close()
 
+def readmdfile( file ) :
+    metadata,s,body = open( file ).read().partition('\n\n')
+    m = {}
+    for item in metadata.split('\n') :
+        key,s,value = item.partition( ': ' )
+        m[key] = value
+    if reduce( lambda a, b : a and b, map( m.has_key, mdfile_keys ) ) :
+        m['Tags'] = m['Tags'].split(', ')
+    else :
+        raise Exception('malformed header : ' + file )
+    return {    'body'      : unicode(body.decode('latin-1')),
+                'date'      : m['Date'],
+                'title'     : unicode(m['Title']),
+                'tags'      : m['Tags'] }
+
 def articles( args ) :
     # list all the articles
     if args.list_articles :
@@ -112,44 +129,36 @@ def articles( args ) :
         return True
     # insert an article
     if args.mdfile and args.username :
-        metadata,s,body = open( args.mdfile ).read().partition('\n\n')
-        m = {}
-        for item in metadata.split('\n') :
-            key,s,value = item.partition(': ')
-            m[key] = value
-        tags = m['Tags'].split(', ')
-        add_article( args.username, m['Title'], m['Date'], tags, body )
+        article = readmdfile( args.mdfile )
+        add_article(    args.username,
+                        article['title'],
+                        article['date'], 
+                        article['tags'],
+                        article['body']     )
         return True
     # insert all the articles in a directory
     if args.mddir and args.username :
         articles = []
+        failed   = []
         for filename in os.listdir( args.mddir ) :
             path = os.path.join( args.mddir, filename )
             if os.path.isfile( path ) :
-                metadata,s,body = open( path ).read().partition('\n\n')
-                m = {}
-                for item in metadata.split('\n') :
-                    key,s,value = item.partition(': ')
-                    m[key] = value
-                print 'found article : ' + m['Title']
-                article = { 'author' : args.username, 
-                            'title'  : unicode(m['Title']), 
-                            'date'   : m['Date'],
-                            'body'   : unicode(body.decode('latin-1')),
-                            'tags'   : m['Tags'].split(', ')    }
+                article = readmdfile( path )
                 articles.append( article )
 
         if confirm( prompt = 'add ' + str(len(articles)) + ' articles?' ) :
             for article in articles :
                 print 'adding article : ' + article['title']
                 try :
-                    add_article( article['author'], 
+                    add_article( args.username, 
                                  article['title'],
                                  article['date'],
                                  article['tags'],
                                  article['body'] )
                 except :
-                    print article
+                    failed.append(article)
+            for article in failed :
+                print 'failed adding article : ' + article['title']
         return True
     # delete an article
     if args.del_id :
