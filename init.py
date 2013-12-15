@@ -134,7 +134,8 @@ def articles( args ) :
                         article['title'],
                         article['date'], 
                         article['tags'],
-                        article['body']     )
+                        article['body'],
+                        args.active     )
         return True
     # insert all the articles in a directory
     if args.mddir and args.username :
@@ -154,7 +155,8 @@ def articles( args ) :
                                  article['title'],
                                  article['date'],
                                  article['tags'],
-                                 article['body'] )
+                                 article['body'],
+                                 args.active    )
                 except :
                     failed.append(article)
             for article in failed :
@@ -201,8 +203,14 @@ parser_articles.add_argument(   '-loaddir',
 parser_articles.add_argument(   '-user',
                                 action      = 'store',
                                 dest        = 'username',
-                                required    = False,
+                                required    = True,
                                 help        = 'Username to use for new articles.' )
+
+parser_articles.add_argument(   '-active',
+                                action      = 'store_true',
+                                dest        = 'active',
+                                required    = False,
+                                help        = 'If set, store article(s) as published.' )
 
 parser_articles.add_argument(   '-list',
                                 action      = 'store_true',
