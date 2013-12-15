@@ -650,32 +650,6 @@ def edit( id ) :
         # land the user back in the profile page
         return redirect( url_for( 'profile', username=session['username'] ) )
 
-@app.route( '/activate/<int:id>', methods = ['GET'] )
-def activate( id ) :
-    """
-    Activate an article.
-    """
-    # You have to be logged in to chage article status
-    if not 'username' in session :
-        flash( 'You must be logged in to change an article\'s status.', 'alert-error' )
-        return redirect( url_for( 'index' ) )
-    
-    change_article_status( id, True )
-    return redirect( url_for( 'profile', username=session['username'] ) )
-
-@app.route( '/deactivate/<int:id>', methods = ['GET'] )
-def deactivate( id ) :
-    """
-    Deactivate an article.
-    """
-    # You have to be logged in to chage article status
-    if not 'username' in session :
-        flash( 'You must be logged in to change an article\'s status.', 'alert-error' )
-        return redirect( url_for( 'index' ) )
-    
-    change_article_status( id, False )
-    return redirect( url_for( 'profile', username=session['username'] ) )
-
 @app.route( '/article', methods = [ 'POST' ] )
 def articlestate() :
     """
