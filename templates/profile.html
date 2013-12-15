@@ -58,10 +58,76 @@
     <a href="/{{ r.year}}/{{ r.month}}/{{ r.day}}/{{ r.slug }}">{{ r.headline }}</a>
     </td>
     <td>{{ r.date }}</td>
-    <td>{% if r.active %}Published : <a href="/deactivate/{{ r.id }}">Un-Publish</a>{% else %}Un-Published : <a href="/activate/{{ r.id }}">Publish</a>{% endif %}</td>
+    <td id="status-{{ r.id }}" >Published : {% if r.active %} Yes {% else %} No {% endif %}
+        (<a href="#" onclick='toggle_active_status( {{ r.id }} );'>toggle</a>)
     </tr>
 {% endfor %}
 </tbody></table>
 </table>
 
+<script>
+
+    function status_maker( id, state ) {
+        result = 'Publisehd : ';
+        if( state == 'true') {
+            result = result + 'Yes ';
+        } else {
+            result = result + 'No ';
+        }
+        result = result + '(<a href="#" onclick="toggle_active_status( ' + id + ' );">toggle</a>)'
+        return result
+    }
+    
+    function toggle_active_status( id ) {
+        
+        resultarea = document.getElementById( 'status-' + id );
+        resultarea.innerHTML = 'Setting article status...';
+        
+        var state;
+        $.ajax({ url: $SCRIPT_ROOT + '/article',
+            type : 'POST',
+            data : { article : id, command : 'get', values : 'active' },
+            success : function(data) {
+                data = jQuery.parseJSON( data );
+                if( data.active ) {
+                    set_active_status( id, false );
+                } else {
+                    set_active_status( id, true  );
+                }
+            },
+            cache : false,
+            error : function( jqXHR, textStatus, errorThrown ) {
+                console.log( textStatus );
+            },
+            dataType : "text",
+            timeout : 30000 });
+    }
+
+    function set_active_status( id, state ) {
+        
+        resultarea = document.getElementById( 'status-' + id );
+        
+        $.ajax({ url: $SCRIPT_ROOT + '/article',
+            type : 'POST',
+            data : {    article : id, 
+                        command : 'set', 
+                        values : '',
+                        active : state },
+            success : function(data){
+                data = jQuery.parseJSON( data );
+                resultarea.innerHTML = status_maker( id, data.active );
+                console.log( data )
+            },
+            cache: false,
+            error: function(jqXHR, textStatus, errorThrown) {
+                if( jqXHR.status == 400 ) { resultarea.innerHTML = 'Huh.'; }
+                if( jqXHR.status == 404 ) { resultarea.innerHTML = 'That\'s weird.'; }
+                if( jqXHR.status == 405 ) { resultarea.innerHTML = 'Wat.'; }
+            },
+            dataType: "text",
+            timeout: 30000 });
+    }
+
+
+</script>
 {% endblock %}

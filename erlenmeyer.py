@@ -676,6 +676,53 @@ def deactivate( id ) :
     change_article_status( id, False )
     return redirect( url_for( 'profile', username=session['username'] ) )
 
+@app.route( '/article', methods = [ 'POST' ] )
+def articlestate() :
+    """
+    Manipulate an article's status.
+    """
+    # You have to be logged in to chage article status
+    if not 'username' in session :
+        flash( 'You must be logged in to change an article\'s status.', 'alert-error' )
+        return redirect( url_for( 'index' ) )
+    
+    if request.method == 'POST' :
+        protocol = [ 'command', 'article', 'values' ]
+        if reduce( lambda x,y : x and y, map( request.form.has_key, protocol ) ) :
+            # the protocol has one comand with two possible
+            # values (get and set), and two mandatory
+            # parameters (article and values).
+            id = int( request.form['article'] )
+            values = request.form['values'].split()
+            if request.form['command'] == 'get' :
+                article = get_article_by_id( id )
+                response = {}
+                for key in values :
+                    if article.has_key( key ) :
+                        response[key] = article[key]
+                    else :
+                        return( 'Invalid article property requested.', 405 )
+                return json.dumps( response )
+            if request.form['command'] == 'set' :
+               
+                # FIXME : 'values' is not used with the set command
+                # FIXME : only handles 'active' property
+
+                if not request.form.has_key( 'active' ) :
+                    return( 'Unimplemented.', 503 )
+                else :
+                    if request.form['active'] == 'true' :
+                        change_article_status( id, True  )
+                    elif request.form['active'] == 'false' :
+                        change_article_status( id, False )
+                    return json.dumps( { 'article' : id, 'active' : request.form['active'] } )
+        else :
+            # request is outside the protocol
+            return( 'Invalid request.', 405 )
+    else :
+        # this is an AJAX-only interface.
+        return( 'Method not allowed.', 405 )
+    
 @app.route( '/feeds/posts' )
 def atom() :
     """
