@@ -116,7 +116,6 @@
             success : function(data){
                 data = jQuery.parseJSON( data );
                 resultarea.innerHTML = status_maker( id, data.active );
-                console.log( data )
             },
             cache: false,
             error: function(jqXHR, textStatus, errorThrown) {
