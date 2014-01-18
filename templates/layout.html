@@ -29,6 +29,7 @@
     <link href="{{ url_for('static', filename='css/erlenmeyer.css') }}" rel="stylesheet">
     <!-- <link href="{{ url_for('static', filename='css/prettify.css') }}" rel="stylesheet"> -->
     <link href="{{ url_for('static', filename='css/doxy.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/offcanvas.css') }}" rel="stylesheet">
     <style>
       body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
@@ -96,7 +97,10 @@
         </div><!--/.nav-collapse -->
       </div>
     </div>
-    <div class="container">
+
+    <div class="container"> <!-- container -->
+    <div class="row row-offcanvas row-offcanvas-right">
+    <div class="col-xs-12 col-sm-9">
 
     <div id="loginModal" class="modal fade">
         <div class="modal-dialog">
@@ -256,6 +260,16 @@
    
     {% block body %}{% endblock %}
 
+    </div>
+    <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
+        
+        <div class="list-group">
+            <a href="#" class="list-group-item active">link</a>
+            <a href="#" class="list-group-item">link</a>
+        </div>
+
+    </div>
+    </div>
     </div> <!-- /container -->
 
     <!-- Le javascript
@@ -277,5 +291,6 @@
     <script src="{{ url_for('static', filename='js/bootstrap-markdown.js')}}"></script>
     <script src="{{ url_for('static', filename='js/markdown.js')}}"></script>
     <script src="{{ url_for('static', filename='js/prettify.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/offcanvas.js')}}"></script>
   </body>
 </html>
