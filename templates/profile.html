@@ -58,8 +58,8 @@
     <a href="/{{ r.year}}/{{ r.month}}/{{ r.day}}/{{ r.slug }}">{{ r.headline }}</a>
     </td>
     <td>{{ r.date }}</td>
-    <td id="status-{{ r.id }}" >Published : {% if r.active %} Yes {% else %} No {% endif %}
-        (<a href="#" onclick='toggle_active_status( {{ r.id }} );'>toggle</a>)
+    <td> <span id="status-{{ r.id }}" >Published : {% if r.active %} Yes {% else %} No {% endif %}</span>
+        <button type="button" class="btn btn-primary btn-xs" data-loading-text="Loading..." onclick='toggle_active_status( {{ r.id }} );'>toggle</button>
     </tr>
 {% endfor %}
 </tbody></table>
@@ -74,7 +74,6 @@
         } else {
             result = result + 'No ';
         }
-        result = result + '(<a href="#" onclick="toggle_active_status( ' + id + ' );">toggle</a>)'
         return result
     }
     
