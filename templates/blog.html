@@ -1,13 +1,20 @@
 {% extends "layout.html" %}
 {% block body %}
 
-    <div class="row row-offcanvas row-offcanvas-right">
-    <div class="col-xs-12 col-sm-9">
+<div class="row">
+    <div class="col-md-3" id="leftCol">
+        <ul class="nav nav-stacked" id="sidebar">
+        {% for r in articles %}
+            <li><a href="#sec{{ r.id }}">{{ r.headline }}</a></li>
+        {% endfor %}
+        </ul>
+    </div>
+    <div class="col-md-9">
 
 {% for r in articles %}
     {% if r.active %}
         <div class="well erlenmeyer-article">
-        <h1><a href="{{ r.url }}">{{ r.headline }}</a></h1>
+        <h1 id="sec{{ r.id }}"><a href="{{ r.url }}">{{ r.headline }}</a></h1>
         <div class="article-markdown">
         {{ r.html }}
         </div>
@@ -38,17 +45,28 @@
 {% endfor %}
 
     </div>
-    <div class="well col-xs-6 col-sm-3 sidebar-offcanvas text-center" id="sidebar" role="navigation">
-        <p>
-        <img class="img-rounded img-responsive img-thumbnail" src="{{ url_for('static', filename='uploads/shanana_thumb.png' ) }}">        
-        <p>
-        <div class="list-group text-left">
-            <p> This is some text about stuff. </p>
-            <a href="#" class="list-group-item active">link</a>
-            <a href="#" class="list-group-item">link</a>
-        </div>
+</div>
 
-    </div>
-    </div>
+<script type="text/javascript">
+    $.getJSON( $SCRIPT_ROOT + '/summary',  function(data) { 
+        $.each( data, function( key, val ) {
+            var year = key;
+            var navyear = "<li><a href=\"\">" + year + "<ul class=\"nav\"id=\"#nav-year" + year + "\">"
+
+            $.each( val, function( key, val ) {
+                var month = key;
+                navyear = navyear + "<li><a href=\"\">" + month + "</a><ul class=\"nav\">"
+                $.each( val, function( key, val ) {
+                    console.log( year, month, val.slug );
+                    navyear = navyear + "<li><a href=\"\">" + val.headline + "</a></li>"
+                } );
+                navyear = navyear + "</ul></li>"
+            } );
+
+            navyear = navyear + "</ul></li>"
+            $("#sidebar").append( navyear );
+        } ); 
+    } );
+</script>
 
 {% endblock %}

@@ -179,6 +179,46 @@ def get_recent_articles( N, published=True ) :
    
     return articles
 
+def get_tags () :
+    pass
+
+def get_article_summary() :
+    """
+    Get a summary of all articles.
+    """
+    command = 'select id, date, slug, headline from articles order by date desc'
+    cur = g.db.execute( command, () )
+    rows = cur.fetchall()
+    summary = {}
+    for row in rows :
+        id,datestring,slug,headline = row
+        article = {}
+        try :
+            d = datetime.strptime( datestring, '%Y-%m-%d %H:%M:%S.%f')
+        except ValueError :
+            d = datetime.strptime( datestring, '%Y-%m-%d %H:%M:%S' )
+
+        article['year']     = format( d.year,   '04d' )
+        article['month']    = d.strftime("%B")
+        article['slug']     = slug
+        article['headline'] = headline
+        article['id']       = id
+        
+        year = article['year']
+        month = article['month']
+        
+        if not summary.has_key( year ) :
+            summary[ year ] = {}
+        if not summary[ year ].has_key( month ) :
+            summary[ year ][ month ] = []
+
+        summary[ year ][ month ].append( article )
+
+    return summary
+
+def get_article_summary_tag() :
+    pass
+
 def get_articles_by_date( year, month=False, day=False, slug=False ) :
     """
     Get articles with a given date. Year is mandatory, month, day
@@ -746,6 +786,13 @@ def index() :
 
         return render_template( 'blog.html',
                                 articles = articles )
+
+@app.route( '/summary', methods = ['GET'] )
+def article_summary() :
+    """
+    Harf up a summary of all articles as a JSON blob.
+    """
+    return( json.dumps( get_article_summary() ), 200 )
 
 @app.route( '/<int:year>', methods = ['GET'] )
 def get_year_articles( year ) :
