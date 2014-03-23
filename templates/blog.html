@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 {% block body %}
 
+    <div class="row row-offcanvas row-offcanvas-right">
+    <div class="col-xs-12 col-sm-9">
+
 {% for r in articles %}
     {% if r.active %}
         <div class="well erlenmeyer-article">
@@ -33,5 +36,19 @@
         {% endif %}
     {% endif %}
 {% endfor %}
+
+    </div>
+    <div class="well col-xs-6 col-sm-3 sidebar-offcanvas text-center" id="sidebar" role="navigation">
+        <p>
+        <img class="img-rounded img-responsive img-thumbnail" src="{{ url_for('static', filename='uploads/shanana_thumb.png' ) }}">        
+        <p>
+        <div class="list-group text-left">
+            <p> This is some text about stuff. </p>
+            <a href="#" class="list-group-item active">link</a>
+            <a href="#" class="list-group-item">link</a>
+        </div>
+
+    </div>
+    </div>
 
 {% endblock %}
