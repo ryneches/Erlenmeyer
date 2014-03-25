@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% block body %}
 
+<!--
 <div class="row">
     <div class="col-md-3" id="leftCol">
         <ul class="nav nav-stacked" id="sidebar">
@@ -9,6 +10,50 @@
         {% endfor %}
         </ul>
     </div>
+-->
+
+<div class="row">
+  <div class="col-md-3" id="lefCol">
+    <div class="well">
+        <div>
+            <ul class="nav nav-header">
+                <li><label class="tree-toggle nav-header">This page</label>
+                    <ul class="nav nav-list tree">
+                    {% for r in articles %}
+                    <li><a href="#sec{{ r.id }}">{{ r.headline }}</a></li>
+                    {% endfor %}
+                    </ul>
+                </li>
+                <li class="divider"></li>
+            </ul>
+            <ul class="nav nav-header">
+                <li><label class="tree-toggle nav-header">Archives</label>
+                    <ul class="nav nav-list tree">
+                        <ul id="archives" class="nav nav-header">
+                            <!-- -->
+                            <li><label class="tree-toggle nav-header">The year</label>
+                                <ul class="nav nav-list tree">
+                                    <ul class="nav nav-header">
+                                        <!-- -->
+                                        <li><label class="tree-toggle nav-header">The month</label>
+                                            <ul class="nav nav-list tree">
+                                                <!-- -->
+                                                <li><a href="">Article name</a></li>
+                                                <!-- -->
+                                            </ul>
+                                        </li>
+                                        <!-- -->
+                                    </ul>
+                                </ul>
+                            </li>
+                            <!-- -->
+                        </ul>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
     <div class="col-md-9">
 
 {% for r in articles %}
@@ -48,25 +93,31 @@
 </div>
 
 <script type="text/javascript">
+   
     $.getJSON( $SCRIPT_ROOT + '/summary',  function(data) { 
         $.each( data, function( key, val ) {
             var year = key;
-            var navyear = "<li><a href=\"\">" + year + "<ul class=\"nav\"id=\"#nav-year" + year + "\">"
-
+            var navyear = "<li><label class='tree-toggle nav-header'>" + year + "</label><ul class='nav nav-list tree'><ul class='nav nav-header'>";
             $.each( val, function( key, val ) {
                 var month = key;
-                navyear = navyear + "<li><a href=\"\">" + month + "</a><ul class=\"nav\">"
+                navyear = navyear + "<li><label class='tree-toggle nav-header'>" + month + "</label><ul class='nav nav-list tree'>";
                 $.each( val, function( key, val ) {
                     console.log( year, month, val.slug );
-                    navyear = navyear + "<li><a href=\"\">" + val.headline + "</a></li>"
+                    navyear = navyear + "<li><a href=''>" + val.headline + "</a></li>";
                 } );
-                navyear = navyear + "</ul></li>"
+                navyear = navyear + "</ul></li>";
             } );
 
-            navyear = navyear + "</ul></li>"
-            $("#sidebar").append( navyear );
+            navyear = navyear + "</ul></ul></li>";
+            $("#archives").append( navyear );
         } ); 
     } );
+
+ 
+    $('.tree-toggle').click(function () {
+        $(this).parent().children('ul.tree').toggle(200);
+    });
+
 </script>
 
 {% endblock %}
