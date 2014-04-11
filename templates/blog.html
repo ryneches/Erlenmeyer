@@ -75,7 +75,7 @@
                 var month = key;
                 navyear = navyear + "<li><label class='tree-toggle nav-header'>" + month + "</label><ul class='nav nav-list tree'>";
                 $.each( val, function( key, val ) {
-                    console.log( year, month, val.slug );
+                    //console.log( year, month, val.slug );
                     navyear = navyear + "<li><a href=''>" + val.headline + "</a></li>";
                 } );
                 navyear = navyear + "</ul></li>";
@@ -89,7 +89,7 @@
         function() { 
             $('.tree-toggle').click( function () {
                 $(this).parent().children('ul.tree').toggle(200);
-                console.log( $(this) );
+                //console.log( $(this) );
             });
             // roll up the archives
             $('#archives').parent().toggle()
@@ -98,7 +98,7 @@
             // roll up the months
             $('#archives').children().children().children().children().children('ul.tree').toggle();
         },
-        function() { console.log('oops.'); }
+        function() { console.log('Huh. The archives broke for some reason.'); }
     );
 
 </script>
