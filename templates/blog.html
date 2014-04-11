@@ -111,12 +111,13 @@
             navyear = navyear + "</ul></ul></li>";
             $("#archives").append( navyear );
         } ); 
-    } );
+    } ).then(
 
- 
-    $('.tree-toggle').click(function () {
-        $(this).parent().children('ul.tree').toggle(200);
-    });
+        function() { $('.tree-toggle').click( function () {
+            $(this).parent().children('ul.tree').toggle(200);
+        }); },
+        function() { console.log('oops.'); }
+    );
 
 </script>
 
