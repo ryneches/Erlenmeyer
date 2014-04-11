@@ -1,17 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<!--
-<div class="row">
-    <div class="col-md-3" id="leftCol">
-        <ul class="nav nav-stacked" id="sidebar">
-        {% for r in articles %}
-            <li><a href="#sec{{ r.id }}">{{ r.headline }}</a></li>
-        {% endfor %}
-        </ul>
-    </div>
--->
-
 <div class="row">
   <div class="col-md-3" id="lefCol">
     <div class="well">
@@ -30,23 +19,7 @@
                 <li><label class="tree-toggle nav-header">Archives</label>
                     <ul class="nav nav-list tree">
                         <ul id="archives" class="nav nav-header">
-                            <!-- -->
-                            <li><label class="tree-toggle nav-header">The year</label>
-                                <ul class="nav nav-list tree">
-                                    <ul class="nav nav-header">
-                                        <!-- -->
-                                        <li><label class="tree-toggle nav-header">The month</label>
-                                            <ul class="nav nav-list tree">
-                                                <!-- -->
-                                                <li><a href="">Article name</a></li>
-                                                <!-- -->
-                                            </ul>
-                                        </li>
-                                        <!-- -->
-                                    </ul>
-                                </ul>
-                            </li>
-                            <!-- -->
+                        <!-- archives dynamically inserted here -->
                         </ul>
                     </ul>
                 </li>
@@ -113,9 +86,18 @@
         } ); 
     } ).then(
 
-        function() { $('.tree-toggle').click( function () {
-            $(this).parent().children('ul.tree').toggle(200);
-        }); },
+        function() { 
+            $('.tree-toggle').click( function () {
+                $(this).parent().children('ul.tree').toggle(200);
+                console.log( $(this) );
+            });
+            // roll up the archives
+            $('#archives').parent().toggle()
+            // roll up the years
+            $('#archives').children().children('ul.tree').toggle();
+            // roll up the months
+            $('#archives').children().children().children().children().children('ul.tree').toggle();
+        },
         function() { console.log('oops.'); }
     );
 
