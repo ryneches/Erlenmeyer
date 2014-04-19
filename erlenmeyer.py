@@ -203,6 +203,7 @@ def get_article_summary() :
         article['slug']     = slug
         article['headline'] = headline
         article['id']       = id
+        article['url']      = '/' + str(d.year) + '/' + format(d.month, '02d') + '/' + format(d.day, '02d') + '/' + str(slug) 
         
         year = article['year']
         month = article['month']

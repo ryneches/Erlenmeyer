@@ -76,7 +76,7 @@
                 navyear = navyear + "<li><label class='tree-toggle nav-header'>" + month + "</label><ul class='nav nav-list tree'>";
                 $.each( val, function( key, val ) {
                     //console.log( year, month, val.slug );
-                    navyear = navyear + "<li><a href=''>" + val.headline + "</a></li>";
+                    navyear = navyear + "<li><a href='" + val.url + "'>" + val.headline + "</a></li>";
                 } );
                 navyear = navyear + "</ul></li>";
             } );
