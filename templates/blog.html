@@ -31,8 +31,8 @@
 
 {% for r in articles %}
     {% if r.active %}
-        <div class="well erlenmeyer-article">
-        <h1 id="sec{{ r.id }}"><a href="{{ r.url }}">{{ r.headline }}</a></h1>
+        <div id="sec{{ r.id }}" class="well erlenmeyer-article">
+        <h1><a href="{{ r.url }}">{{ r.headline }}</a></h1>
         <div class="article-markdown">
         {{ r.html }}
         </div>
