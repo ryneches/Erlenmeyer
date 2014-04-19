@@ -186,7 +186,7 @@ def get_article_summary() :
     """
     Get a summary of all articles.
     """
-    command = 'select id, date, slug, headline from articles order by date desc'
+    command = 'select id, date, slug, headline from articles where active = 1 order by date desc'
     cur = g.db.execute( command, () )
     rows = cur.fetchall()
     summary = {}
