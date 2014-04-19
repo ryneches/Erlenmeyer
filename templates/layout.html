@@ -1,1 +1,248 @@
-basic.html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Erlenmeyer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- jQuery -->
+    <script src="{{ url_for('static', filename='js/jquery.js')}}"></script>
+    <script type=text/javascript>
+        $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script>    
+    <!-- MathJax config -->
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            "HTML-CSS": { availableFonts: ["STIX", "TeX"], 
+                          linebreaks: { automatic: true }
+            }
+        });
+    </script>
+    <link href="{{ url_for('atom') }}"
+      rel="alternate"
+      title="Recent Changes" 
+      type="application/atom+xml">
+    <script src="{{ url_for('static', filename='js/MathJax.js', config='TeX-AMS-MML_HTMLorMML')}}"></script>
+    <!-- Le styles -->
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/bootstrap-markdown.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/erlenmeyer.css') }}" rel="stylesheet">
+    <!-- <link href="{{ url_for('static', filename='css/prettify.css') }}" rel="stylesheet"> -->
+    <link href="{{ url_for('static', filename='css/doxy.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/offcanvas.css') }}" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png' )}}">
+  </head>
+
+  <body onload="prettyPrint()">
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">Erlenmeyer</a>
+        </div>
+        <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="{{ url_for('index') }}">Home</a></li>
+            <li><a data-toggle="modal" href="#aboutModal">About</a></li>
+            <li><a data-toggle="modal" href="#contactModal">Contact</a></li>
+            {% if authenticated %}
+                <li><a href="{{ url_for('profile', username=username) }}">My profile</a></li>
+                <li><a href="{{ url_for('logout') }}">Log out</a></li>
+            {% else %}
+                <li><a data-toggle="modal" href="#loginModal">Log in</a></li>
+            {% endif %}
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+    <div id="loginModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Let's have a login, shall we?</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <form class="form-search" action="/login" method="post">        
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-addon">@</span>
+                                <input type="text" class="form-control input-lg" placeholder="Username" name="username">
+                            </div>
+                            <br/>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+                                <input type="password" class="form-control input-lg" placeholder="Password" name="password">
+                            </div>
+                            <br/>
+                            <button class="btn btn-large btn-primary" type="submit">Sign in</button>
+                            <a data-toggle="modal" class="btn btn-large btn-success" href="#signupModal">Sign up</a><br/>
+                            <label class="checkbox">
+                                <input type="checkbox" value="remember-me"> Remember me</input>
+                            </label>
+                        </form>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div id="aboutModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">About Erlenmeyer</h4>
+                </div>
+                <div class="modal-body">
+                    <p> This is Erlenmeyer, a simple blogging platform
+                        written in Python using <a href="http://flask.pocoo.org/">flask</a>, 
+                        because, let's face it, the world
+                        needed another blogging platform. Like all blogging
+                        tools, Erlenmeyer is incomplete, unfinished, and will
+                        probably wind up being abandoned by the author as soon
+                        as you get it working.</p>
+
+                    <p> Apathy and abandonment is the fate of all web tools.
+                        Erlenmeyer is designed address this problem by 
+                        being the 1963 VW Bug of blogging software. It is not
+                        intended to be elegant, or fast, or "enterprise scale," 
+                        whatever that means. Erlenmeyer
+                        is intended to be simple enough for you to modify,
+                        improve, optimize, extend and hack yourself, even if
+                        you are not much of a web programmer. You just want to 
+                        write things and stick
+                        them on the internet. You don't want your life to
+                        include words like, "deploy" and "migrate."</p>
+
+                    <p><a href="https://github.com/ryneches/erlenmeyer" class="btn btn-primary btn-large">To GitHub! &raquo;</a></p>
+    
+                    <p>Erlenmeyer is licensed under the <a href="http://www.gnu.org/licenses/gpl-3.0.txt">GNU GPL version 3.0</a>.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div id="contactModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Send complaints to :</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            Erlenmeyer, c/o Russell Neches<br/>
+                            University of California, Davis<br/>
+                            Room 5212<br/>
+                            Genome and Biomedical Sciences Facility<br/>
+                            451 Health Sciences Drive<br/>
+                            Davis, CA  95616-8816<br/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <!-- signup modal -->
+    <div id="signupModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Sign up!</h4>
+                </div>
+                <form action='/signup' method='post' enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                            <input type="text" class="form-control input-lg" placeholder="Real name" name="realname" size="15"></input>
+                        </div><br/>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-addon">@</span>
+                            <input type="text" class="form-control input-lg" placeholder="Username" name="username" size="15"></input>
+                        </div><br/>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+                            <input type="password" class="form-control input-lg" placeholder="Password" name="password">
+                            <input type="password" class="form-control imput-lg" placeholder="Password (again)" name="password_check"></input>
+                        </div><br/>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Your avatar photo</div>
+                            <div class="panel-body">
+                                <input type="file" name="avatar" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <input type="submit" class="btn btn-primary" value="Save changes"></input>
+                    </div>
+                </form>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert {{ category }} alert-dismissable fade in">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    {% if category == "alert-error" %}
+                    <h3>Whoops!</h3>
+                    {% else %}
+                    <h3>So!</h3>
+                    {% endif %}
+                    <strong><p>{{ message }}</p></strong>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% block body %}{% endblock %}
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{{ url_for('static', filename='js/bootstrap/bootstrap.min.js')}}"</script>
+    <script src="{{ url_for('static', filename='js/bootstrap/transition.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap/alert.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap/modal.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap/dropdown.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap/scrollspy.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap/tab.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap/tooltip.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap/popover.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap/button.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap/collapse.js')}}"></script>
+    <!-- <script src="{{ url_for('static', filename='js/bootstrap/carousel.js')}}"></script> -->
+    <script src="{{ url_for('static', filename='js/bootstrap-markdown.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/markdown.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/prettify.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/offcanvas.js')}}"></script>
+  </body>
+</html>
