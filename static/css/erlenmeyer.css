@@ -52,12 +52,9 @@ body {
 }
 
 // port nav-list over from Bootstrap 2.3.2
+label {}
 
-label {
-    border : 
-}
-
-.nav-header {
+li label {
     display : block;
     padding : 3px 15px;
     font-size : 11px;
