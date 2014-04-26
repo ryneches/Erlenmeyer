@@ -95,6 +95,17 @@ def get_articles() :
     con.close()
     return [ dict(zip( erlenmeyer.ARTICLE_COLS, row )) for row in rows ]
 
+def get_article_by_id( id ) :
+    """
+    Fetch and return one article.
+    """
+    con = sqlite3.connect( 'erlenmeyer.db' )
+    cur = con.cursor()
+    cur.execute( 'select * from articles where id = ?  order by date desc', (id,) )
+    rows = cur.fetchall()
+    con.close()
+    return dict(zip( erlenmeyer.ARTICLE_COLS, rows[0] ) )
+
 def delete_article( id ) :
     """
     Delete an article by ID.
@@ -127,6 +138,10 @@ def articles( args ) :
         for article in articles :
             print str(article['id']) + ' : ' + str(article['headline'])
         return True
+    # dump an article by its id
+    if args.dump_id :
+        article = get_article_by_id( args.dump_id )
+        print article
     # insert an article
     if args.mdfile and args.username :
         article = readmdfile( args.mdfile )
