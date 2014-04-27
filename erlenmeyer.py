@@ -20,6 +20,11 @@ import pandoc
 import urllib, urllib2
 import json
 
+import requests
+from requests_oauthlib import OAuth1
+
+from erlenmeyer import config
+
 # Flask configuration
 DATABASE = 'erlenmeyer.db'
 DEBUG = True
@@ -519,6 +524,76 @@ def valid_login( username, password ) :
     else :
         return False
 
+## Begin FigShare stuff
+
+oauth = OAuth1(client_key            = config.consumer_key, 
+               client_secret         = config.consumer_secret,
+               resource_owner_key    = config.access_token,
+               resource_owner_secret = config.access_token_secret,
+               signature_type        = 'auth_header')
+
+
+def create_dataset( headline, body ) :
+    """
+    Create a new dataset on FigShare for an article.
+    """
+    client = requests.session()
+    
+    body = {    'title'         :   headline,
+                'description'   :   config.description,
+                'defined_type'  :   'dataset'           }
+    
+    headers = { 'content-type'  :   'application/json'}
+    
+    response = client.post(
+'http://api.figshare.com/v1/my_data/articles',
+                            auth    = oauth,
+                            data    = json.dumps(body),
+                            headers = headers)
+    
+    results = json.loads( response.content )
+    
+    return results
+
+def annotate_article_doi( id, doi ) :
+    """
+    Annotate an article's metadata with its DOI, and set its published
+    status to True.
+    """
+    g.db.execute('update articles set published = ? where id = ?', (True, id) )
+    g.db.execute('update articles set doi = ? where id = ?', (doi, id)
+)
+    g.db.commit()
+
+def add_markdown_to_dataset( article, figshare_id ) :
+    """
+    Add the MarkDown content of an article to a FigShare dataset.
+    """
+    client = requests.session()
+    filename = article['slug'] + '.md'
+
+    files = { 'filedata' : ( filename, article['body'] ) }
+    
+    response = client.put(
+'http://api.figshare.com/v1/my_data/articles/' 
+                                + str(figshare_id) + '/files',
+                            auth  = oauth,
+                            files = files )
+    
+    results = json.loads( response.content )
+
+    return results
+
+def publish_article_on_figshare( article ) :
+    #article = get_article_by_id( id )
+    dataset = create_dataset( article['headline'], article['body'] )
+    add_markdown_to_dataset( article, dataset['article_id'] )
+    annotate_article_doi( article['id'], dataset['doi'] )
+
+    print ":: published " + str(article['id'])
+
+## End FigShare stuff
+
 @app.route( '/login', methods = ['GET', 'POST'] )
 def login() :
     '''
@@ -707,9 +782,12 @@ def articlestate() :
             # the protocol has one comand with two possible
             # values (get and set), and two mandatory
             # parameters (article and values).
+            print request.form
+            
             id = int( request.form['article'] )
             values = request.form['values'].split()
             if request.form['command'] == 'get' :
+                # get any article property
                 article = get_article_by_id( id )
                 response = {}
                 for key in values :
@@ -718,19 +796,26 @@ def articlestate() :
                     else :
                         return( 'Invalid article property requested.', 405 )
                 return json.dumps( response )
-            if request.form['command'] == 'set' :
-               
-                # FIXME : 'values' is not used with the set command
-                # FIXME : only handles 'active' property
 
-                if not request.form.has_key( 'active' ) :
-                    return( 'Unimplemented.', 503 )
-                else :
+            if request.form['command'] == 'set' :
+                # set article properties : active, published
+
+                if request.form.has_key( 'active' ) :
+                    # set article active status
                     if request.form['active'] == 'true' :
                         change_article_status( id, True  )
                     elif request.form['active'] == 'false' :
                         change_article_status( id, False )
                     return json.dumps( { 'article' : id, 'active' : request.form['active'] } )
+
+                if request.form.has_key( 'published' ) :
+                    # set article published status
+                    if request.form['published'] == 'true' :
+                        publish_article_on_figshare( get_article_by_id( id ) )
+                        print ":: publishing " + str( id )
+                        return json.dumps( { 'article' : id, 'published' : 'true' } )
+
+
         else :
             # request is outside the protocol
             return( 'Invalid request.', 405 )
