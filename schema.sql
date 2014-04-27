@@ -19,6 +19,8 @@ create table articles (
     lng                 real,
     body                text,
     html                text,
+    published           boolean,
+    doi                 text,
     active              boolean,
     foreign key(username) references users(username)
 );

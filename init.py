@@ -141,7 +141,7 @@ def articles( args ) :
     # dump an article by its id
     if args.dump_id :
         article = get_article_by_id( args.dump_id )
-        print article
+        print article['body']
     # insert an article
     if args.mdfile and args.username :
         article = readmdfile( args.mdfile )

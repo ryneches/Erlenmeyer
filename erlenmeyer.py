@@ -41,7 +41,7 @@ CSLFILE             = 'data/plos.csl'       # citation style file
 SERVING_SIZE        = 5                     # number of articles to serve by default
 
 # globals
-ARTICLE_COLS = [ 'id', 'slug', 'username', 'date', 'headline', 'lat', 'lng', 'body', 'html', 'active' ]
+ARTICLE_COLS = [ 'id', 'slug', 'username', 'date', 'headline', 'lat', 'lng', 'body', 'html', 'published', 'doi', 'active' ]
 USER_COLS    = [ 'id', 'username', 'password', 'realname', 'avatar', 'thumb' ]
 
 app = Flask(__name__)
