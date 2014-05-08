@@ -552,8 +552,7 @@ def create_dataset( headline, body ) :
     
     headers = { 'content-type'  :   'application/json'}
     
-    response = client.post(
-'http://api.figshare.com/v1/my_data/articles',
+    response = client.post( 'http://api.figshare.com/v1/my_data/articles',
                             auth    = oauth,
                             data    = json.dumps(body),
                             headers = headers)
@@ -568,8 +567,7 @@ def annotate_article_doi( id, doi ) :
     status to True.
     """
     g.db.execute('update articles set published = ? where id = ?', (True, id) )
-    g.db.execute('update articles set doi = ? where id = ?', (doi, id)
-)
+    g.db.execute('update articles set doi = ? where id = ?', (doi, id) )
     g.db.commit()
 
 def add_markdown_to_dataset( article, figshare_id ) :
@@ -581,8 +579,7 @@ def add_markdown_to_dataset( article, figshare_id ) :
 
     files = { 'filedata' : ( filename, article['body'] ) }
     
-    response = client.put(
-'http://api.figshare.com/v1/my_data/articles/' 
+    response = client.put( 'http://api.figshare.com/v1/my_data/articles/' 
                                 + str(figshare_id) + '/files',
                             auth  = oauth,
                             files = files )
