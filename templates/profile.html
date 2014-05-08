@@ -65,9 +65,10 @@ style="font-weight:bold"><td>Title</td><td>Date</td><td>Published</td><td>Status
     <td>{{ r.date }}</td>
     <td> <span id="publish-{{ r.id }}" >
         {% if r.published %} Yes 
-        {% else %}</span><button type="button" class="btn
+        {% else %}<button type="button" class="btn
 btn-primary btn-xs" data-loading-text="Loading..." onclick='publish_to_figshare( {{ r.id }} );'>Publish on FigShare</button>
         {% endif %}
+        </span>
     </td>
     <td> <span id="status-{{ r.id }}" >Active : {% if r.active %} Yes {% else %} No {% endif %}</span>
         <button type="button" class="btn btn-primary btn-xs" data-loading-text="Loading..." onclick='toggle_active_status( {{ r.id }} );'>toggle</button>

@@ -408,7 +408,8 @@ def add_article( username, headline, body, lat=False, lng=False, postdate=False 
     # generate the HTML
     html = Markup( md_to_html( body ) )
     
-    # all new articles are created with active=False
+    # all new articles are created with 
+    # published=False, doi='' and active=False
     values = (  slugify(headline),
                 username,
                 t,
@@ -417,11 +418,17 @@ def add_article( username, headline, body, lat=False, lng=False, postdate=False 
                 headline,
                 body,
                 html,
+                False,
+                '',
                 False )
-    g.db.execute('insert into articles (slug, username, date, lat, lng, headline, body, html, active) values (?,?,?,?,?,?,?,?,?)', values )
+    g.db.execute('insert into articles (slug, username, date, lat, lng, headline, body, html, published, doi, active) values (?,?,?,?,?,?,?,?,?,?,?)', values )
     g.db.commit()
     
-    return True
+    # return the id of the latest article
+    cur = g.db.execute('select id from articles order by id desc')
+    row = cur.fetchone()[0]
+    
+    return int(row)
 
 def add_citation( citation_name, doi, bibtex=None ) :
     """
