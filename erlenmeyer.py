@@ -23,7 +23,8 @@ import json
 import requests
 from requests_oauthlib import OAuth1
 
-from erlenmeyer import config
+#from erlenmeyer import config
+import config
 
 # Flask configuration
 DATABASE = 'erlenmeyer.db'

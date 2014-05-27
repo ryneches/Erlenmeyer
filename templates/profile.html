@@ -125,9 +125,9 @@ btn-primary btn-xs" data-loading-text="Loading..." onclick='publish_to_figshare(
         
         $.ajax({ url: $SCRIPT_ROOT + '/article',
             type : 'POST',
-            data : {    article : id, 
-                        command : 'set', 
-                        values : 'active',
+            data : {    article : id,
+                        command : 'set',
+                        values  : 'active',
                         active : state },
             success : function(data){
                 data = jQuery.parseJSON( data );
